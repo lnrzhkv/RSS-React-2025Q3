@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './ErrorBoundary.module.css';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -10,20 +11,23 @@ class ErrorBoundary extends React.Component<
   ErrorBoundaryState
 > {
   state: ErrorBoundaryState = { hasError: false };
-  static handleErrorAndUpdateState(error: Error) {
+
+  static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Uncaught error:', error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div>
-          <h2>Something went wrong</h2>
-          <p>{this.state.error?.message || 'Unknown error'} </p>
+        <div className={styles.errorBoundary}>
+          <h2 className={styles.title}>Something went wrong</h2>
+          <p className={styles.message}>
+            {this.state.error?.message || 'Unknown error'}
+          </p>
           <p>Please refresh the page or try again later.</p>
         </div>
       );
