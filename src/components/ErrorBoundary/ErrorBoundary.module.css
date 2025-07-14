@@ -1,0 +1,21 @@
+.errorBoundary {
+  padding: 30px;
+  background-color: #fdf2f2;
+  border: 1px solid #f8d7da;
+  border-radius: 8px;
+  color: #d1603d;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+  margin-top: 40px;
+}
+
+.title {
+  color: #d1603d;
+  font-size: 1.5rem;
+}
+
+.message {
+  font-weight: bold;
+  margin: 10px 0;
+}
