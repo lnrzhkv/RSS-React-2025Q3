@@ -1,22 +1,30 @@
 import axios from 'axios';
 import type { ApiResponse, PokemonType } from './types';
 
-const API_URL = 'https://pokeapi.co/api/v2';
+const API_BASE = 'https://pokeapi.co/api/v2';
 
 export const fetchCharacters = async (
-  searchRequest = '',
+  searchTerm = '',
   page = 1
 ): Promise<ApiResponse> => {
   const limit = 10;
   const offset = (page - 1) * limit;
 
-  if (searchRequest) {
+  if (searchTerm) {
     try {
       const response = await axios.get(
-        `${API_URL}/pokemon/${searchRequest.toLowerCase()}`
+        `${API_BASE}/pokemon/${searchTerm.toLowerCase()}`
       );
       return {
-        results: response.data,
+        results: [
+          {
+            id: response.data.id,
+            name: response.data.name,
+            height: response.data.height,
+            weight: response.data.weight,
+            types: response.data.types,
+          },
+        ],
         count: 1,
       };
     } catch {
@@ -24,7 +32,7 @@ export const fetchCharacters = async (
     }
   }
 
-  const response = await axios.get(`${API_URL}/pokemon`, {
+  const response = await axios.get(`${API_BASE}/pokemon`, {
     params: { limit, offset },
   });
 
@@ -33,9 +41,14 @@ export const fetchCharacters = async (
   );
 
   const detailedResponses = await Promise.all(detailedRequests);
-
   return {
-    results: detailedResponses.map((res) => res.data),
+    results: detailedResponses.map((res) => ({
+      id: res.data.id,
+      name: res.data.name,
+      height: res.data.height,
+      weight: res.data.weight,
+      types: res.data.types,
+    })),
     count: response.data.count,
   };
 };
