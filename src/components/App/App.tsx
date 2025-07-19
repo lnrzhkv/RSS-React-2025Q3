@@ -60,14 +60,18 @@ class App extends React.Component<AppProps, SearchContextProps> {
   render() {
     return (
       <SearchContext.Provider value={this.state}>
-        <div className={styles.appContainer}>
+        <div data-testid="app-container" className={styles.appContainer}>
           <div className={styles.topSection}>
-            <h1 className={styles.appTitle}>Pokémon Search</h1>
+            <h1 data-testid="app-main-title" className={styles.appTitle}>
+              Pokémon Search
+            </h1>
             <Search />
           </div>
 
           <div className={styles.resultsSection}>
-            <h2 className={styles.sectionTitle}>Search Results</h2>
+            <h2 data-testid="app-results-title" className={styles.sectionTitle}>
+              Search Results
+            </h2>
             <Results />
           </div>
 
