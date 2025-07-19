@@ -32,6 +32,7 @@ class Search extends React.Component {
           onChange={this.handleChange}
           placeholder="Search Pokémon..."
           className={styles.searchInput}
+          data-testid="search-input"
         />
         <button onClick={this.handleSubmit} className={styles.searchButton}>
           Search

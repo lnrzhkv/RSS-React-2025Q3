@@ -14,7 +14,11 @@ class ErrorButton extends React.Component {
     }
 
     return (
-      <button className={styles.errorButton} onClick={this.triggerError}>
+      <button
+        data-testid="error-button"
+        className={styles.errorButton}
+        onClick={this.triggerError}
+      >
         Trigger Test Error
       </button>
     );

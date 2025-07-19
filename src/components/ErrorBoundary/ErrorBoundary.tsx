@@ -23,7 +23,10 @@ class ErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className={styles.errorBoundary}>
+        <div
+          className={styles.errorBoundary}
+          data-testid="error-boundary-fallback"
+        >
           <h2 className={styles.title}>Something went wrong</h2>
           <p className={styles.message}>
             {this.state.error?.message || 'Unknown error'}

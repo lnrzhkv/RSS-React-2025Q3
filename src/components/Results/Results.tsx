@@ -29,7 +29,7 @@ class Results extends React.Component {
     }
 
     return (
-      <div className={styles.resultsContainer}>
+      <div className={styles.resultsContainer} data-testid="results-container">
         {characters.map((character) => (
           <ResultsItem key={character.id} character={character} />
         ))}
