@@ -17,7 +17,7 @@
     "noUncheckedSideEffectImports": true,
     "esModuleInterop": true,
     "types": ["@types/jest", "@types/node"],
-    "baseUrl": ".",
+    "baseUrl": "."
   },
   "include": [
     "src/**/*",
