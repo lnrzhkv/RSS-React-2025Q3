@@ -1,0 +1,32 @@
+.appContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.topSection {
+  margin-bottom: 30px;
+}
+
+.appTitle {
+  color: #d1603d;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.resultsSection {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  color: #363732;
+  margin-top: 0;
+}
+
+.footer {
+  margin-top: 30px;
+  text-align: center;
+}

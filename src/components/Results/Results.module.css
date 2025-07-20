@@ -1,0 +1,76 @@
+.resultsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.characterCard {
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.characterName {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #363732;
+}
+
+.characterDetails {
+  margin: 5px 0;
+  color: #7f8c8d;
+}
+
+.characterType {
+  margin: 5px 0;
+  font-style: italic;
+}
+
+.errorContainer {
+  padding: 20px;
+  background-color: #ffecec;
+  border: 1px solid #ffbdbd;
+  border-radius: 8px;
+  color: #e74c3c;
+}
+
+.errorTitle {
+  font-weight: bold;
+  margin-top: 0;
+}
+
+.noResults {
+  padding: 30px;
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+.loaderContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.skeletonItem {
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+}
+
+.skeletonTitle {
+  height: 20px;
+  width: 70%;
+  background-color: #e0e0e0;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.skeletonBody {
+  height: 16px;
+  width: 90%;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+}
