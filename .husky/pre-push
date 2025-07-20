@@ -1,5 +1,12 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-echo "🚀 Running tests before push..."
-npm test
+echo "=== HUSKY PRE-PUSH HOOK RUNNING ==="
+echo "Working directory: $(pwd)"
+echo "Node version: $(node -v)"
+echo "NPM version: $(npm -v)"
+
+npm test || {
+  echo "❌ Tests failed - push aborted"
+  exit 1
+}
