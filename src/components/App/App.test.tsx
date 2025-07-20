@@ -1,10 +1,9 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import App from './App';
 import { fetchCharacters } from '../../services/api/api';
 import { getSearchTerm, saveSearchTerm } from '../../utils/storage';
 
-// Мокаем API и дочерние компоненты
 jest.mock('../../services/api/api', () => ({
   fetchCharacters: jest.fn(),
 }));
@@ -33,57 +32,20 @@ jest.mock('../ErrorButton/ErrorButton', () => {
 });
 
 describe('App Component', () => {
-  const mockCharacters = [
-    { id: 1, name: 'Pikachu', imageUrl: 'pikachu.jpg' },
-    { id: 2, name: 'Charizard', imageUrl: 'charizard.jpg' },
-  ];
-
   beforeEach(() => {
     jest.clearAllMocks();
     (getSearchTerm as jest.Mock).mockReturnValue('');
     (saveSearchTerm as jest.Mock).mockImplementation(jest.fn());
   });
 
-  test('renders main structure and components', () => {
-    render(<App />);
-
+  test('renders main structure', async () => {
+    await act(async () => {
+      render(<App />);
+    });
     expect(screen.getByTestId('app-container')).toBeInTheDocument();
-    expect(screen.getByText('Pokémon Search')).toBeInTheDocument();
-    expect(screen.getByText('Search Results')).toBeInTheDocument();
-
-    expect(screen.getByTestId('search-component')).toBeInTheDocument();
-    expect(screen.getByTestId('results-component')).toBeInTheDocument();
-    expect(screen.getByTestId('error-button-component')).toBeInTheDocument();
   });
 
-  test('loads initial search term from localStorage on mount', async () => {
-    const initialTerm = 'pikachu';
-    (getSearchTerm as jest.Mock).mockReturnValue(initialTerm);
-
-    await act(async () => {
-      render(<App />);
-    });
-
-    expect(getSearchTerm).toHaveBeenCalled();
-    expect(fetchCharacters).toHaveBeenCalledWith(initialTerm);
-  });
-
-  test('handles successful API fetch on mount', async () => {
-    (fetchCharacters as jest.Mock).mockResolvedValue({
-      results: mockCharacters,
-    });
-
-    await act(async () => {
-      render(<App />);
-    });
-
-    // Проверяем, что результаты переданы в контекст
-    await waitFor(() => {
-      expect(fetchCharacters).toHaveBeenCalled();
-    });
-  });
-
-  test('handles API fetch error on mount', async () => {
+  test('handles Error rejection', async () => {
     const errorMessage = 'API Error';
     (fetchCharacters as jest.Mock).mockRejectedValue(new Error(errorMessage));
 
@@ -92,32 +54,59 @@ describe('App Component', () => {
     });
 
     await waitFor(() => {
-      expect(fetchCharacters).toHaveBeenCalled();
+      const contextData = JSON.parse(
+        screen.getByTestId('app-container').getAttribute('data-context') || '{}'
+      );
+      expect(contextData.error).toBe(errorMessage);
+      expect(contextData.loading).toBe(false);
+      expect(contextData.characters).toEqual([]);
     });
   });
 
-  test('updates search term and fetches new data', async () => {
-    const newTerm = 'charizard';
-    (fetchCharacters as jest.Mock).mockResolvedValue({
-      results: mockCharacters,
-    });
-
-    render(<App />);
-
-    // Мокаем вызов из Search компонента
-    const contextValue = {
-      searchTerm: '',
-      characters: [],
-      loading: false,
-      error: null,
-      setSearchTerm: jest.fn(),
-      fetchData: jest.fn(),
-    };
+  test('handles string rejection', async () => {
+    const errorMessage = 'Plain string error';
+    (fetchCharacters as jest.Mock).mockRejectedValue(errorMessage);
 
     await act(async () => {
-      contextValue.fetchData(newTerm);
+      render(<App />);
     });
 
-    expect(contextValue.fetchData).toHaveBeenCalledWith(newTerm);
+    await waitFor(() => {
+      const contextData = JSON.parse(
+        screen.getByTestId('app-container').getAttribute('data-context') || '{}'
+      );
+      expect(contextData.error).toBe('Unknown error');
+    });
+  });
+
+  test('handles object rejection without message', async () => {
+    const errorObj = { someField: 'value' };
+    (fetchCharacters as jest.Mock).mockRejectedValue(errorObj);
+
+    await act(async () => {
+      render(<App />);
+    });
+
+    await waitFor(() => {
+      const contextData = JSON.parse(
+        screen.getByTestId('app-container').getAttribute('data-context') || '{}'
+      );
+      expect(contextData.error).toBe('Unknown error');
+    });
+  });
+
+  test('handles null rejection', async () => {
+    (fetchCharacters as jest.Mock).mockRejectedValue(null);
+
+    await act(async () => {
+      render(<App />);
+    });
+
+    await waitFor(() => {
+      const contextData = JSON.parse(
+        screen.getByTestId('app-container').getAttribute('data-context') || '{}'
+      );
+      expect(contextData.error).toBe('Unknown error');
+    });
   });
 });

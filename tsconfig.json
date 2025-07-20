@@ -16,7 +16,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "esModuleInterop": true,
-    "types": ["@types/jest", "@types/node"],
+    "types": ["@types/jest", "@types/node", "@testing-library/jest-dom"],
     "baseUrl": "."
   },
   "include": [
