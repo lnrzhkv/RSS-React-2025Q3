@@ -1,0 +1,56 @@
+.container {
+  max-width: 500px;
+  position: sticky;
+  height: fit-content;
+  top: 1rem;
+}
+
+.errorContainer {
+  padding: 20px;
+  background-color: #ffecec;
+  border: 1px solid #ffbdbd;
+  border-radius: 8px;
+  color: #e74c3c;
+}
+
+.errorTitle {
+  font-weight: bold;
+  margin-top: 0;
+}
+
+.close {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  cursor: pointer;
+  padding: 20px;
+}
+
+
+.name {
+  margin-bottom: 1rem;
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+
+.ul {
+  padding: 0;
+  padding-left: 20px;
+  list-style-type: square;
+}
+.li {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 2px;
+  padding-right: 2px;
+  border-bottom: 1px dotted gray;
+  &:hover {
+    background-color: rgba(128, 128, 128, 0.071);
+  }
+}
+
+.liWrapper {
+  display: flex;
+  justify-content: space-between;
+}
