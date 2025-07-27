@@ -1,97 +1,25 @@
 import React from 'react';
-import {
-  SearchContext,
-  type SearchContextProps,
-} from '../../context/SearchContext';
-import Search from '../Search/Search';
-import ErrorButton from '../ErrorButton/ErrorButton';
-import styles from './App.module.css';
-import type { ApiResponse } from '../../services/api/types';
-import { fetchCharacters } from '../../services/api/api';
-import Results from '../Results/Results';
-import { getSearchTerm, saveSearchTerm } from '../../utils/storage';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import AppLayout from '../AppLayout/AppLayout';
+import { GlobalProvider } from '../../context/GlobalContext';
+import AboutPage from '../../pages/AboutPage/AboutPage';
+import NotFoundPage from '../../pages/NotFoundPage/NotFoundPage';
+import PokemonList from '../PokemonList/PokemonList';
 
-type AppProps = object;
-
-class App extends React.Component<AppProps, SearchContextProps> {
-  constructor(props: AppProps) {
-    super(props);
-    this.state = {
-      searchTerm: getSearchTerm(),
-      characters: [],
-      loading: true,
-      error: null,
-      setSearchTerm: this.handleSetSearchTerm,
-      fetchData: this.fetchData,
-    };
-  }
-
-  componentDidMount() {
-    this.fetchData(this.state.searchTerm);
-  }
-
-  fetchData = async (term: string) => {
-    this.setState({
-      loading: true,
-      error: null,
-      searchTerm: term,
-    });
-
-    try {
-      const data: ApiResponse = await fetchCharacters(term);
-      this.setState({
-        characters: data.results,
-        loading: false,
-      });
-    } catch (err) {
-      this.setState({
-        error: err instanceof Error ? err.message : 'Unknown error',
-        loading: false,
-        characters: [],
-      });
-    }
-  };
-
-  handleSetSearchTerm = (term: string) => {
-    saveSearchTerm(term);
-    this.fetchData(term);
-  };
-
-  render() {
-    const contextData = JSON.stringify({
-      searchTerm: this.state.searchTerm,
-      characters: this.state.characters,
-      loading: this.state.loading,
-      error: this.state.error,
-    });
-    return (
-      <SearchContext.Provider value={this.state}>
-        <div
-          data-testid="app-container"
-          data-context={contextData}
-          className={styles.appContainer}
-        >
-          <div className={styles.topSection}>
-            <h1 data-testid="app-main-title" className={styles.appTitle}>
-              Pokémon Search
-            </h1>
-            <Search />
-          </div>
-
-          <div className={styles.resultsSection}>
-            <h2 data-testid="app-results-title" className={styles.sectionTitle}>
-              Search Results
-            </h2>
-            <Results />
-          </div>
-
-          <div className={styles.footer}>
-            <ErrorButton />
-          </div>
-        </div>
-      </SearchContext.Provider>
-    );
-  }
-}
+const App: React.FC = () => {
+  return (
+    <BrowserRouter>
+      <GlobalProvider>
+        <Routes>
+          <Route path="/" element={<AppLayout />}>
+            <Route index element={<PokemonList />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </GlobalProvider>
+    </BrowserRouter>
+  );
+};
 
 export default App;
