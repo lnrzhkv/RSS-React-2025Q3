@@ -1,0 +1,46 @@
+
+.content {
+  display: flex;
+  width: 100%;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.listContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.rightPart {
+  max-width: 600px;
+}
+
+
+.topSection {
+  margin-bottom: 30px;
+}
+
+.appTitle {
+  color: #d1603d;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+
+.sectionTitle {
+  color: #363732;
+  margin-top: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.footer {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.topPagination {
+  margin-bottom: 1rem;
+}
