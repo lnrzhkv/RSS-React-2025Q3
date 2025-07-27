@@ -47,7 +47,6 @@ describe('usePokemonBySearch', () => {
     expect(result.current.characters).toEqual([]);
     expect(result.current.loading).toBe(false);
     expect(result.current.requestError).toBeNull();
-    expect(result.current.isNotFound).toBe(false);
   });
 
   it('should update search value, params and storage on change', () => {
@@ -95,30 +94,9 @@ describe('usePokemonBySearch', () => {
     expect(result.current.characters).toEqual(mockCharacters);
     expect(result.current.loading).toBe(false);
     expect(result.current.requestError).toBeNull();
-    expect(result.current.isNotFound).toBe(false);
     expect(onDataLoad).toHaveBeenCalledWith(mockCharacters);
     expect(setParams).toHaveBeenCalled();
     expect(setStorage).toHaveBeenCalledWith('Pika');
-  });
-
-  it('should set isNotFound to true if results are empty', async () => {
-    mockFetchCharacterBySearchString.mockResolvedValueOnce({
-      results: [],
-      count: 0,
-      next: null,
-      previous: null,
-    });
-    const setStorage = jest.fn();
-    mockUseLocalStorage.mockImplementation(() => ['abc', setStorage]);
-    const setParams = jest.fn();
-    mockUseSearchParams.mockReturnValue([new URLSearchParams(), setParams]);
-
-    const { result } = renderHook(() => usePokemonBySearch());
-    await act(async () => {
-      await result.current.fetchCharacterBySearch();
-    });
-    expect(result.current.isNotFound).toBe(true);
-    expect(result.current.characters).toEqual([]);
   });
 
   it('should handle fetch errors', async () => {
@@ -137,7 +115,6 @@ describe('usePokemonBySearch', () => {
     expect(result.current.requestError).toBe('API failed');
     expect(result.current.loading).toBe(false);
     expect(result.current.characters).toEqual([]);
-    expect(result.current.isNotFound).toBe(false);
   });
 
   it('should not crash if onDataLoad is not provided', async () => {

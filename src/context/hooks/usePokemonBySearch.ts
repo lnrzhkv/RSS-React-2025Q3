@@ -19,7 +19,6 @@ export const usePokemonBySearch = ({ onDataLoad }: Props = {}) => {
   const [characters, setCharacters] = useState<CharacterWithImage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [requestError, setReqError] = useState<string | null>(null);
-  const [isNotFound, setIsNotFound] = useState<boolean>(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -64,7 +63,6 @@ export const usePokemonBySearch = ({ onDataLoad }: Props = {}) => {
   const fetchCharacterBySearch = async () => {
     setLoading(true);
     setReqError(null);
-    setIsNotFound(false);
     setStorageValue(searchTerm);
     resetQueryPage();
 
@@ -73,7 +71,6 @@ export const usePokemonBySearch = ({ onDataLoad }: Props = {}) => {
       setCharacters(data.results);
       setLoading(false);
       onDataLoad?.(data.results);
-      setIsNotFound(data.count === 0);
     } catch (err) {
       setReqError(err instanceof Error ? err.message : 'Unknown error');
       setLoading(false);
@@ -87,7 +84,6 @@ export const usePokemonBySearch = ({ onDataLoad }: Props = {}) => {
     characters,
     loading,
     requestError,
-    isNotFound,
     fetchCharacterBySearch,
   };
 };

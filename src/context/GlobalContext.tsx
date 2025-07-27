@@ -15,7 +15,6 @@ export interface ContextProps {
   characters: CharacterWithImage[] | [];
   loading: boolean;
   error: string | null;
-  isNotFound: boolean;
   onChangeSearchValue: (value: string) => void;
   fetchPokemons: (page?: number) => Promise<void>;
   fetchCharacterBySearch: () => Promise<void>;
@@ -47,7 +46,6 @@ export const GlobalProvider: React.FC<ProviderProps> = ({ children }) => {
 
   const {
     requestError: searchError,
-    isNotFound,
     fetchCharacterBySearch,
     loading: searchLoading,
     onChangeSearchValue,
@@ -114,7 +112,6 @@ export const GlobalProvider: React.FC<ProviderProps> = ({ children }) => {
 
         loading,
         error,
-        isNotFound,
 
         searchValue,
         onChangeSearchValue,

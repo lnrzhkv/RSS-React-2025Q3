@@ -1,16 +1,33 @@
 import React from 'react';
 import styles from './Navigation.module.css';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useGlobalContext } from '../../context/hooks/useGlobalContext';
 
 const Navigation: React.FC = () => {
+  const navigator = useNavigate();
+  const { onChangeSearchValue, fetchPokemons } = useGlobalContext();
+
+  const handleNavigate = (from: string) => {
+    onChangeSearchValue('');
+    fetchPokemons(1);
+    navigator(from);
+  };
   return (
     <nav data-testid={'nav'} className={styles.nav}>
-      <Link data-testid="nav-item-home" to="/" className={styles.navLink}>
+      <div
+        data-testid="nav-item-home"
+        onClick={() => handleNavigate('/')}
+        className={styles.navLink}
+      >
         Home
-      </Link>
-      <Link data-testid="nav-item-about" to="/about" className={styles.navLink}>
+      </div>
+      <div
+        data-testid="nav-item-about"
+        onClick={() => handleNavigate('/about')}
+        className={styles.navLink}
+      >
         About
-      </Link>
+      </div>
     </nav>
   );
 };

@@ -15,7 +15,6 @@ const mockContext = {
   fetchCharacterBySearch: jest.fn(),
   isDetailsOpen: false,
   setIsDetailsOpen: jest.fn(),
-  isNotFound: false,
   pagination: {
     onPageChange: jest.fn(),
     currentPage: '1',

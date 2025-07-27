@@ -6,8 +6,9 @@ import { useSearchParams } from 'react-router-dom';
 import { useGlobalContext } from '../../context/hooks/useGlobalContext';
 
 const Results: React.FC = () => {
-  const { characters, error, isNotFound, loading, setIsDetailsOpen } =
-    useGlobalContext();
+  const { characters, error, loading, setIsDetailsOpen } = useGlobalContext();
+
+  console.log(characters, 'characters');
   const [searchParams, setSearchParams] = useSearchParams();
   const handleClickItem = useCallback(
     (id: string) => {
@@ -21,7 +22,7 @@ const Results: React.FC = () => {
     [searchParams, setSearchParams]
   );
 
-  if (loading) {
+  if (loading && characters.length === 0) {
     return <Loader />;
   }
 
@@ -34,7 +35,7 @@ const Results: React.FC = () => {
     );
   }
 
-  if (characters.length === 0 || isNotFound) {
+  if (characters.length === 0) {
     return <div className={styles.noResults}>No Pokémon found</div>;
   }
 

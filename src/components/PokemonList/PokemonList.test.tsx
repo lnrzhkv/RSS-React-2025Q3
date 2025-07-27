@@ -4,11 +4,23 @@ import PokemonList from './PokemonList';
 import { useGlobalContext } from '../../context/hooks/useGlobalContext';
 
 jest.mock('../../context/hooks/useGlobalContext');
+jest.mock('../Pagination/Pagination', () => {
+  const MockPagination = () => (
+    <div data-testid="pagination">
+      <button data-testid="pagination-prev">Prev</button>
+      <button data-testid="pagination-next">Next</button>
+      <button data-testid="pagination-page-1">1</button>
+      <button data-testid="pagination-page-2">2</button>
+    </div>
+  );
+  MockPagination.displayName = 'MockPagination';
+  return MockPagination;
+});
 const mockPagination = {
-  currentPage: '1',
   totalPages: 2,
-  hasPrev: false,
+  currentPage: 1,
   hasNext: true,
+  hasPrev: false,
   onPreviousPage: jest.fn(),
   onNextPage: jest.fn(),
   onPageChange: jest.fn(),
@@ -19,26 +31,17 @@ describe('PokemonList', () => {
     (useGlobalContext as jest.Mock).mockReturnValue({
       pagination: mockPagination,
       fetchPokemons: jest.fn(),
-      characters: [
-        {
-          id: 1,
-          name: 'Pikachu',
+      characters: Array(10)
+        .fill(null)
+        .map((_, index) => ({
+          id: index + 1,
+          name: `Pikachu ${index + 1}`,
           height: 4,
           weight: 60,
           image: 'pikachu.png',
           types: [],
-        },
-        {
-          id: 2,
-          name: 'Bulbasaur',
-          height: 7,
-          weight: 69,
-          image: 'bulbasaur.png',
-          types: [],
-        },
-      ],
+        })),
       error: null,
-      isNotFound: false,
       loading: false,
       setIsDetailsOpen: jest.fn(),
       isDetailsOpen: true,
@@ -72,11 +75,13 @@ describe('PokemonList', () => {
     expect(screen.getByTestId('character-card-1')).toBeInTheDocument();
     expect(screen.getByTestId('character-card-2')).toBeInTheDocument();
 
-    expect(screen.getAllByTestId('pagination').length).toBe(2);
-    expect(screen.getAllByTestId('pagination-prev').length).toBe(2);
-    expect(screen.getAllByTestId('pagination-next').length).toBe(2);
-    expect(screen.getAllByTestId('pagination-page-1').length).toBe(2);
-    expect(screen.getAllByTestId('pagination-page-2').length).toBe(2);
+    if (mockPagination.totalPages > 1) {
+      expect(screen.getAllByTestId('pagination').length).toBe(2);
+      expect(screen.getAllByTestId('pagination-prev').length).toBe(2);
+      expect(screen.getAllByTestId('pagination-next').length).toBe(2);
+      expect(screen.getAllByTestId('pagination-page-1').length).toBe(2);
+      expect(screen.getAllByTestId('pagination-page-2').length).toBe(2);
+    }
 
     expect(screen.getByTestId('error-button')).toBeInTheDocument();
 
@@ -89,6 +94,7 @@ describe('PokemonList', () => {
     (useGlobalContext as jest.Mock).mockReturnValue({
       ...useGlobalContext(),
       loading: true,
+      characters: [],
     });
     render(
       <MemoryRouter>
@@ -116,19 +122,6 @@ describe('PokemonList', () => {
     (useGlobalContext as jest.Mock).mockReturnValue({
       ...useGlobalContext(),
       characters: [],
-    });
-    render(
-      <MemoryRouter>
-        <PokemonList />
-      </MemoryRouter>
-    );
-    expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
-  });
-
-  it('renders no results when isNotFound is true', () => {
-    (useGlobalContext as jest.Mock).mockReturnValue({
-      ...useGlobalContext(),
-      isNotFound: true,
     });
     render(
       <MemoryRouter>

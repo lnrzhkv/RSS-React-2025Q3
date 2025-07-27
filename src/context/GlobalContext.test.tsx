@@ -16,7 +16,6 @@ describe('GlobalContext branches', () => {
     searchError = undefined as string | null | undefined,
     pokemonsLoading = false,
     searchLoading = false,
-    isNotFound = false,
     hasNext = true,
     hasPrev = true,
     currentPage = 1,
@@ -24,7 +23,6 @@ describe('GlobalContext branches', () => {
   } = {}) {
     (usePokemonBySearch as jest.Mock).mockReturnValue({
       requestError: searchError,
-      isNotFound,
       fetchCharacterBySearch: jest.fn(),
       loading: searchLoading,
       onChangeSearchValue: jest.fn(),
@@ -65,37 +63,31 @@ describe('GlobalContext branches', () => {
     return ref.current;
   }
 
-  it('отдает error, если есть pokemonsError', () => {
+  it('returns error if pokemonsError is present', () => {
     setup({ pokemonsError: 'Ошибка' });
     const ctx = getContextValue();
     expect(ctx.error).toBe('Ошибка');
   });
 
-  it('отдает error, если есть searchError', () => {
+  it('returns error if searchError is present', () => {
     setup({ searchError: 'Ошибка поиска' });
     const ctx = getContextValue();
     expect(ctx.error).toBe('Ошибка поиска');
   });
 
-  it('отдает loading, если pokemonsLoading', () => {
+  it('returns loading if pokemonsLoading is true', () => {
     setup({ pokemonsLoading: true });
     const ctx = getContextValue();
     expect(ctx.loading).toBe(true);
   });
 
-  it('отдает loading, если searchLoading', () => {
+  it('returns loading if searchLoading is true', () => {
     setup({ searchLoading: true });
     const ctx = getContextValue();
     expect(ctx.loading).toBe(true);
   });
 
-  it('отдает isNotFound', () => {
-    setup({ isNotFound: true });
-    const ctx = getContextValue();
-    expect(ctx.isNotFound).toBe(true);
-  });
-
-  it('pagination: onPreviousPage не вызывает fetchPokemons, если hasPrev=false', async () => {
+  it('does not call fetchPokemons on onPreviousPage if hasPrev is false', async () => {
     setup({ hasPrev: false });
     const ctx = getContextValue();
     await act(async () => {
@@ -104,7 +96,7 @@ describe('GlobalContext branches', () => {
     expect((usePokemons as jest.Mock)().fetchPokemons).not.toHaveBeenCalled();
   });
 
-  it('pagination: onNextPage не вызывает fetchPokemons, если hasNext=false', async () => {
+  it('does not call fetchPokemons on onNextPage if hasNext is false', async () => {
     setup({ hasNext: false });
     const ctx = getContextValue();
     await act(async () => {
@@ -113,7 +105,7 @@ describe('GlobalContext branches', () => {
     expect((usePokemons as jest.Mock)().fetchPokemons).not.toHaveBeenCalled();
   });
 
-  it('pagination: onPageChange вызывает fetchPokemons', async () => {
+  it('calls fetchPokemons on onPageChange', async () => {
     setup();
     const ctx = getContextValue();
     await act(async () => {
@@ -122,7 +114,7 @@ describe('GlobalContext branches', () => {
     expect((usePokemons as jest.Mock)().fetchPokemons).toHaveBeenCalledWith(2);
   });
 
-  it('characters по умолчанию пустой массив', () => {
+  it('has an empty characters array by default', () => {
     setup();
     const ctx = getContextValue();
     expect(ctx.characters).toEqual([]);

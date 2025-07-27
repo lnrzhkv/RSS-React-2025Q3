@@ -9,10 +9,20 @@ import PokemonDetails from '../PokemonDetails/PokemonDetails';
 import Pagination from '../Pagination/Pagination';
 
 const PokemonList: React.FC = () => {
-  const { pagination, fetchPokemons } = useGlobalContext();
+  const {
+    characters,
+    pagination,
+    fetchPokemons,
+    searchValue,
+    fetchCharacterBySearch,
+  } = useGlobalContext();
 
   useEffect(() => {
-    fetchPokemons(+pagination.currentPage);
+    if (searchValue) {
+      fetchCharacterBySearch();
+    } else {
+      fetchPokemons(+pagination.currentPage);
+    }
   }, []);
 
   return (
@@ -36,28 +46,34 @@ const PokemonList: React.FC = () => {
             <h2 data-testid="app-results-title" className={styles.sectionTitle}>
               Search Results
             </h2>
-            <Pagination
-              data-testid="pokemonlist-pagination-top"
-              currentPage={+pagination.currentPage}
-              totalPages={pagination.totalPages || 1}
-              hasPrev={pagination.hasPrev}
-              hasNext={pagination.hasNext}
-              onPreviousPage={pagination.onPreviousPage}
-              onNextPage={pagination.onNextPage}
-              onPageChange={pagination.onPageChange}
-              className={styles.topPagination}
-            />
-            <Results data-testid="pokemonlist-results" />
-            <Pagination
-              data-testid="pokemonlist-pagination-bottom"
-              currentPage={+pagination.currentPage}
-              totalPages={pagination.totalPages || 1}
-              hasPrev={pagination.hasPrev}
-              hasNext={pagination.hasNext}
-              onPreviousPage={pagination.onPreviousPage}
-              onNextPage={pagination.onNextPage}
-              onPageChange={pagination.onPageChange}
-            />
+            {characters.length >= 10 && (
+              <Pagination
+                data-testid="pokemonlist-pagination-top"
+                currentPage={+pagination.currentPage}
+                totalPages={pagination.totalPages || 1}
+                hasPrev={pagination.hasPrev}
+                hasNext={pagination.hasNext}
+                onPreviousPage={pagination.onPreviousPage}
+                onNextPage={pagination.onNextPage}
+                onPageChange={pagination.onPageChange}
+                className={styles.topPagination}
+              />
+            )}
+
+            <Results />
+
+            {characters.length >= 10 && (
+              <Pagination
+                data-testid="pokemonlist-pagination-bottom"
+                currentPage={+pagination.currentPage}
+                totalPages={pagination.totalPages || 1}
+                hasPrev={pagination.hasPrev}
+                hasNext={pagination.hasNext}
+                onPreviousPage={pagination.onPreviousPage}
+                onNextPage={pagination.onNextPage}
+                onPageChange={pagination.onPageChange}
+              />
+            )}
           </Box>
 
           <div className={styles.footer} data-testid="pokemonlist-footer">
