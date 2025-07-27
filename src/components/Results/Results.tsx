@@ -1,41 +1,55 @@
-import React from 'react';
-import { SearchContext } from '../../context/SearchContext';
+import React, { useCallback } from 'react';
 import Loader from './Loader';
 import ResultsItem from './ResultsItem';
 import styles from './Results.module.css';
+import { useSearchParams } from 'react-router-dom';
+import { useGlobalContext } from '../../context/hooks/useGlobalContext';
 
-class Results extends React.Component {
-  static contextType = SearchContext;
-  declare context: React.ContextType<typeof SearchContext>;
+const Results: React.FC = () => {
+  const { characters, error, isNotFound, loading, setIsDetailsOpen } =
+    useGlobalContext();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const handleClickItem = useCallback(
+    (id: string) => {
+      const newParams = new URLSearchParams(searchParams);
 
-  render() {
-    const { characters, loading, error } = this.context;
+      newParams.set('characterId', id);
+      setSearchParams(newParams);
 
-    if (loading) {
-      return <Loader />;
-    }
+      setIsDetailsOpen(true);
+    },
+    [searchParams, setSearchParams]
+  );
 
-    if (error) {
-      return (
-        <div className={styles.errorContainer}>
-          <p className={styles.errorTitle}>Error</p>
-          <p>{error}</p>
-        </div>
-      );
-    }
+  if (loading) {
+    return <Loader />;
+  }
 
-    if (characters.length === 0) {
-      return <div className={styles.noResults}>No Pokémon found</div>;
-    }
-
+  if (error) {
     return (
-      <div className={styles.resultsContainer} data-testid="results-container">
-        {characters.map((character) => (
-          <ResultsItem key={character.id} character={character} />
-        ))}
+      <div className={styles.errorContainer}>
+        <p className={styles.errorTitle}>Error</p>
+        <p>{error}</p>
       </div>
     );
   }
-}
+
+  if (characters.length === 0 || isNotFound) {
+    return <div className={styles.noResults}>No Pokémon found</div>;
+  }
+
+  return (
+    <div className={styles.resultsContainer} data-testid="results-container">
+      {characters.map((character) => (
+        <div
+          key={character.id}
+          onClick={() => handleClickItem(String(character.id))}
+        >
+          <ResultsItem character={character} />
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default Results;

@@ -1,28 +1,40 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Results from './Results';
-import {
-  SearchContext,
-  type SearchContextProps,
-} from '../../context/SearchContext';
-import type { Character } from '../../services/api/types';
+import { GlobalContext, type ContextProps } from '../../context/GlobalContext';
+import type { CharacterWithImage } from '../../services/api/types';
+import { BrowserRouter } from 'react-router-dom';
 
-const mockContext: SearchContextProps = {
-  searchTerm: '',
-  setSearchTerm: jest.fn(),
+const mockContext = {
+  searchValue: '',
+  onChangeSearchValue: jest.fn(),
   characters: [],
   loading: false,
   error: null,
-  fetchData: jest.fn(),
-};
+  fetchPokemons: jest.fn(),
+  fetchCharacterBySearch: jest.fn(),
+  isDetailsOpen: false,
+  setIsDetailsOpen: jest.fn(),
+  isNotFound: false,
+  pagination: {
+    onPageChange: jest.fn(),
+    currentPage: '1',
+    hasNext: false,
+    hasPrev: false,
+    onPreviousPage: jest.fn(),
+    onNextPage: jest.fn(),
+    totalPages: 1,
+  },
+} satisfies ContextProps;
 
-const mockCharacters: Character[] = [
+const mockCharacters: CharacterWithImage[] = [
   {
     id: 1,
     name: 'Pikachu',
     height: 40,
     weight: 6,
     types: [{ slot: 1, type: { name: 'electric', url: '' } }],
+    image: 'pikachu.png',
   },
   {
     id: 2,
@@ -30,17 +42,20 @@ const mockCharacters: Character[] = [
     height: 60,
     weight: 8,
     types: [{ slot: 1, type: { name: 'fire', url: '' } }],
+    image: 'pikachu.png',
   },
 ];
 
 describe('Results Component', () => {
-  const renderWithContext = (override: Partial<SearchContextProps> = {}) => {
+  const renderWithContext = (override: Partial<ContextProps> = {}) => {
     const contextValue = { ...mockContext, ...override };
 
     return render(
-      <SearchContext.Provider value={contextValue}>
-        <Results />
-      </SearchContext.Provider>
+      <BrowserRouter>
+        <GlobalContext.Provider value={contextValue}>
+          <Results />
+        </GlobalContext.Provider>
+      </BrowserRouter>
     );
   };
 

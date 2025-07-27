@@ -1,14 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ResultsItem from './ResultsItem';
-import type { Character } from '../../services/api/types';
+import type { CharacterWithImage } from '../../services/api/types';
 
 describe('ResultsItem Component', () => {
-  const mockCharacter: Character = {
+  const mockCharacter: CharacterWithImage = {
     id: 1,
     name: 'Pikachu',
     height: 40,
     weight: 60,
+    image:
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
     types: [
       {
         slot: 1,
@@ -46,11 +48,13 @@ describe('ResultsItem Component', () => {
   });
 
   test('handles character with single type', () => {
-    const singleTypeCharacter: Character = {
+    const singleTypeCharacter: CharacterWithImage = {
       id: 2,
       name: 'Bulbasaur',
       height: 70,
       weight: 69,
+      image:
+        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
       types: [
         {
           slot: 1,
@@ -68,11 +72,13 @@ describe('ResultsItem Component', () => {
   });
 
   test('handles character without types', () => {
-    const noTypeCharacter: Character = {
+    const noTypeCharacter: CharacterWithImage = {
       id: 3,
       name: 'Missingno',
       height: 0,
       weight: 0,
+      image:
+        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
       types: [],
     };
 
@@ -81,11 +87,13 @@ describe('ResultsItem Component', () => {
   });
 
   test('renders all types regardless of order', () => {
-    const multiTypeCharacter: Character = {
+    const multiTypeCharacter: CharacterWithImage = {
       id: 4,
       name: 'Charizard',
       height: 170,
       weight: 905,
+      image:
+        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
       types: [
         {
           slot: 2,
