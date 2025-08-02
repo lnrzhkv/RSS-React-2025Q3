@@ -5,12 +5,10 @@ import { Provider } from 'react-redux';
 import { store } from '../../shared/store';
 import { useGlobalContext } from '../../context/hooks/useGlobalContext';
 
-// Мокируем только хук контекста
 jest.mock('../../context/hooks/useGlobalContext', () => ({
   useGlobalContext: jest.fn(),
 }));
 
-// Создаем мок-функцию
 const mockUseGlobalContext = useGlobalContext as jest.Mock;
 
 describe('PokemonList', () => {
@@ -72,7 +70,6 @@ describe('PokemonList', () => {
   it('renders core components', () => {
     renderPokemonList();
 
-    // Проверяем основные элементы интерфейса
     expect(screen.getByText('Pokémon Search')).toBeInTheDocument();
     expect(screen.getByText('Search Results')).toBeInTheDocument();
     expect(
@@ -84,7 +81,6 @@ describe('PokemonList', () => {
   it('renders characters list', () => {
     renderPokemonList();
 
-    // Проверяем, что отображаются персонажи
     mockContext.characters.forEach((character) => {
       expect(screen.getByText(character.name)).toBeInTheDocument();
     });
@@ -99,9 +95,7 @@ describe('PokemonList', () => {
 
     renderPokemonList();
 
-    // Проверяем лоадер
     expect(screen.getByTestId('loader')).toBeInTheDocument();
-    // Заголовок "Search Results" остается видимым
     expect(screen.getByText('Search Results')).toBeInTheDocument();
   });
 
@@ -114,10 +108,8 @@ describe('PokemonList', () => {
 
     renderPokemonList();
 
-    // Проверяем сообщение об ошибке
     expect(screen.getByText('Error')).toBeInTheDocument();
     expect(screen.getByText(errorMessage)).toBeInTheDocument();
-    // Заголовок "Search Results" остается видимым
     expect(screen.getByText('Search Results')).toBeInTheDocument();
   });
 
@@ -129,9 +121,7 @@ describe('PokemonList', () => {
 
     renderPokemonList();
 
-    // Проверяем сообщение об отсутствии результатов
     expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
-    // Заголовок "Search Results" остается видимым
     expect(screen.getByText('Search Results')).toBeInTheDocument();
   });
 });
