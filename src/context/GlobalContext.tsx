@@ -112,6 +112,9 @@ export const GlobalProvider: React.FC<ProviderProps> = ({ children }) => {
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setNewTheme(newTheme);
+    document.body.setAttribute('data-theme', newTheme);
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
   };
 
   const setNewTheme = (value: 'light' | 'dark') => {
@@ -126,9 +129,7 @@ export const GlobalProvider: React.FC<ProviderProps> = ({ children }) => {
       | 'dark'
       | 'undefined';
 
-    console.log(currentTheme, 'currentTheme');
-
-    if (currentTheme === undefined) {
+    if (currentTheme === null) {
       setNewTheme('light');
     } else {
       setNewTheme(currentTheme as 'light' | 'dark');
