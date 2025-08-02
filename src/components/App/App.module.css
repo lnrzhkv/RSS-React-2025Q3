@@ -1,7 +1,10 @@
 .appContainer {
-  max-width: 800px;
+   max-width: var(--max-width);
   margin: 0 auto;
   padding: 20px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: var(--transition);
 }
 
 .topSection {
@@ -9,20 +12,22 @@
 }
 
 .appTitle {
-  color: #d1603d;
+  color: var(--primary-color);
   text-align: center;
   margin-bottom: 20px;
+  font-weight: 700;
+  letter-spacing: 60px;
 }
 
 .resultsSection {
-  background-color: #f9f9f9;
+  background-color: var(--section-bg);
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--box-shadow);
 }
 
 .sectionTitle {
-  color: #363732;
+  color: var(--secondary-color);
   margin-top: 0;
 }
 
@@ -32,10 +37,13 @@
 }
 
 .nav {
-  background-color: #f8f9fa;
   padding: 1rem;
   margin-bottom: 2rem;
-  border-bottom: 1px solid #e9ecef;
+   background-color: var(--nav-bg);
+  border-bottom: 1px solid var(--nav-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .nav ul {
@@ -51,10 +59,12 @@
 
 .nav a {
   text-decoration: none;
-  color: #007bff;
+  color: var(--nav-link);
   font-weight: 500;
 }
 
 .nav a:hover {
   text-decoration: underline;
 }
+
+

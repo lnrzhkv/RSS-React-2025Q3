@@ -1,5 +1,12 @@
 .appContainer {
+  max-width: var(--max-width);
   margin: 0 auto;
   padding: 20px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: var(--transition);
+  margin-top: 50px;
+  margin-bottom: 90px;
+  border-radius: 20px;
+  font-family: "Gruppo", sans-serif;
 }
-

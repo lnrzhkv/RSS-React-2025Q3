@@ -6,14 +6,16 @@
 .searchInput {
   flex: 1;
   padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px 0 0 4px;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-color);
   font-size: 16px;
+  color: var(--text-color);
+  border-radius: 4px 0 0 4px;
 }
 
 .searchButton {
   padding: 10px 20px;
-  background-color: #777da7;
+   background-color: var(--pagination-bg);
   color: white;
   border: none;
   border-radius: 0 4px 4px 0;
@@ -23,5 +25,5 @@
 }
 
 .searchButton:hover {
-  background-color: #595f8d;
+  background-color: var(--pagination-hover);
 }

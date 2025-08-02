@@ -7,10 +7,10 @@
 
 .errorContainer {
   padding: 20px;
-  background-color: #ffecec;
-  border: 1px solid #ffbdbd;
-  border-radius: 8px;
-  color: #e74c3c;
+  background-color: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: var(--border-radius);
+  color: var(--primary-color);
 }
 
 .errorTitle {
@@ -24,6 +24,7 @@
   right: 0px;
   cursor: pointer;
   padding: 20px;
+  color: var(--text-color);
 }
 
 
@@ -31,6 +32,7 @@
   margin-bottom: 1rem;
   font-size: 3rem;
   font-weight: bold;
+  color: var(--primary-color);
 }
 
 
@@ -39,15 +41,14 @@
   padding-left: 20px;
   list-style-type: square;
 }
+
 .li {
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 2px;
-  padding-right: 2px;
-  border-bottom: 1px dotted gray;
-  &:hover {
-    background-color: rgba(128, 128, 128, 0.071);
-  }
+  padding: 4px 2px;
+  border-bottom: 1px dotted var(--border-color);
+}
+
+.li:hover {
+  background-color: var(--hover-bg);
 }
 
 .liWrapper {

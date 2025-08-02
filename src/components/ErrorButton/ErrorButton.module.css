@@ -1,6 +1,6 @@
 .errorButton {
   padding: 10px 20px;
-  background-color: #fb4d3d;
+  background-color: var(--danger-color);
   color: white;
   border: none;
   border-radius: 4px;
@@ -10,5 +10,5 @@
 }
 
 .errorButton:hover {
-  background-color: #d75139;
+  background-color: var(--danger-hover);
 }

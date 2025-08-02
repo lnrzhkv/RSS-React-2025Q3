@@ -5,7 +5,8 @@ import { useGlobalContext } from '../../context/hooks/useGlobalContext';
 
 const Navigation: React.FC = () => {
   const navigator = useNavigate();
-  const { onChangeSearchValue, fetchPokemons } = useGlobalContext();
+  const { onChangeSearchValue, fetchPokemons, toggleTheme, theme } =
+    useGlobalContext();
 
   const handleNavigate = (from: string) => {
     onChangeSearchValue('');
@@ -28,6 +29,9 @@ const Navigation: React.FC = () => {
       >
         About
       </div>
+      <button onClick={toggleTheme} className={styles.themeToggle}>
+        {theme === 'light' ? '☾' : '☀︎'}
+      </button>
     </nav>
   );
 };

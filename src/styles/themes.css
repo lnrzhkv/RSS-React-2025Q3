@@ -1,0 +1,58 @@
+:root {
+  --max-width: 920px;
+  --border-radius: 8px;
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+[data-theme="light"] {
+  --background-color: #ffffff;
+  --box-color-bg: #f8f9fa;
+  --text-color: #333333;
+  --primary-color: #d1603d;
+  --secondary-color: #363732;
+  --nav-bg: #f8f9fa;
+  --nav-border: #e9ecef;
+  --nav-link: #007bff;
+  --section-bg: #f9f9f9;
+  --error-bg: #fdf2f2;
+  --error-border: #f8d7da;
+  --danger-color: #fb4d3d;
+  --danger-hover: #d75139;
+  --pagination-bg: #777da7;
+  --pagination-hover: #5a6085;
+  --pagination-active: #3a3f5c;
+  --border-color: #ddd;
+  --hover-bg: #e8e8e8;
+  --muted-text: #7f8c8d;
+  --skeleton-color: #e0e0e0;
+  --card-bg: white;
+  --card-border: #eee;
+  --card-hover-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] {
+  --background-color: #313131;
+  --box-color-bg: #4c4b4b;
+  --text-color: #f0f0f0;
+  --primary-color: #ff8c66;
+  --secondary-color: #e0e0e0;
+  --nav-bg: #4c4b4b;
+  --nav-border: #444444;
+  --nav-link: #4da6ff;
+  --section-bg: #252525;
+  --error-bg: #4c1a1a;
+  --error-border: #822;
+  --danger-color: #ff6655;
+  --danger-hover: #e05544;
+  --pagination-bg: #8888b0;
+  --pagination-hover: #6a6a9a;
+  --pagination-active: #4a4a7a;
+  --border-color: #555;
+  --hover-bg: #555;
+  --muted-text: #b0b0b0;
+  --skeleton-color: #555;
+  --card-bg: #252525;
+  --card-border: #444;
+  --card-hover-shadow: 0 1px 6px rgba(255, 255, 255, 0.1);
+}

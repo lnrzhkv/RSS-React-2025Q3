@@ -13,7 +13,6 @@ const PokemonDetails: React.FC = () => {
 
   const { details, loading, error } = usePokemonDetails({ charId });
 
-  console.log(details, 'details');
   useEffect(() => {
     const params = new URLSearchParams(location.search);
 
