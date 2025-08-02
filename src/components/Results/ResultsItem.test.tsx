@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ResultsItem from './ResultsItem';
 import type { CharacterWithImage } from '../../services/api/types';
+import { Provider } from 'react-redux';
+import { store } from '../../shared/store';
 
 describe('ResultsItem Component', () => {
   const mockCharacter: CharacterWithImage = {
@@ -29,8 +31,16 @@ describe('ResultsItem Component', () => {
     ],
   };
 
+  const renderWithProvider = (character: CharacterWithImage) => {
+    return render(
+      <Provider store={store}>
+        <ResultsItem character={character} />
+      </Provider>
+    );
+  };
+
   test('renders character card with correct data', () => {
-    render(<ResultsItem character={mockCharacter} />);
+    renderWithProvider(mockCharacter);
 
     const card = screen.getByTestId(`character-card-${mockCharacter.id}`);
     expect(card).toBeInTheDocument();
@@ -66,7 +76,7 @@ describe('ResultsItem Component', () => {
       ],
     };
 
-    render(<ResultsItem character={singleTypeCharacter} />);
+    renderWithProvider(singleTypeCharacter);
     const typeText = screen.getByText(/Types:/).textContent;
     expect(typeText).toContain('grass');
   });
@@ -82,7 +92,7 @@ describe('ResultsItem Component', () => {
       types: [],
     };
 
-    render(<ResultsItem character={noTypeCharacter} />);
+    renderWithProvider(noTypeCharacter);
     expect(screen.getByText('Types:')).toBeInTheDocument();
   });
 
@@ -112,7 +122,7 @@ describe('ResultsItem Component', () => {
       ],
     };
 
-    render(<ResultsItem character={multiTypeCharacter} />);
+    renderWithProvider(multiTypeCharacter);
     const typeText = screen.getByText(/Types:/).textContent;
     expect(typeText).toContain('fire');
     expect(typeText).toContain('flying');

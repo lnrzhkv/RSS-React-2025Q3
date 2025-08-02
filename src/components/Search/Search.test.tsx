@@ -23,6 +23,8 @@ const mockContext = {
     onNextPage: jest.fn(),
     totalPages: 1,
   },
+  theme: 'light' as const,
+  toggleTheme: jest.fn(),
 } satisfies ContextProps;
 
 describe('Search Component', () => {

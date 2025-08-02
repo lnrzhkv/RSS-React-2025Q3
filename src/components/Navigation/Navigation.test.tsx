@@ -20,6 +20,8 @@ const mockContext = {
     onNextPage: jest.fn(),
     onPageChange: jest.fn(),
   },
+  theme: 'light' as const,
+  toggleTheme: jest.fn(),
   fetchCharacterBySearch: jest.fn(),
   setIsDetailsOpen: jest.fn(),
   isDetailsOpen: false,
