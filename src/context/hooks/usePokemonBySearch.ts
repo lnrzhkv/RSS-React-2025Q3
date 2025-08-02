@@ -49,6 +49,7 @@ export const usePokemonBySearch = ({ onDataLoad }: Props = {}) => {
     const newParams = new URLSearchParams(searchParams);
     newParams.set('page', '1');
     setSearchParams(newParams);
+    setCharacters([]);
   }, [searchParams, setSearchParams]);
 
   const onChangeSearch = useCallback(
@@ -85,5 +86,6 @@ export const usePokemonBySearch = ({ onDataLoad }: Props = {}) => {
     loading,
     requestError,
     fetchCharacterBySearch,
+    resetQueryPage,
   };
 };
