@@ -1,134 +1,173 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import Pagination from './Pagination';
 
-describe('Pagination Component', () => {
-  const mockOnPageChange = jest.fn();
-  const mockOnPreviousPage = jest.fn();
-  const mockOnNextPage = jest.fn();
+describe('Pagination', () => {
+  const onPrev = jest.fn();
+  const onNext = jest.fn();
+  const onChange = jest.fn();
 
   beforeEach(() => {
-    mockOnPageChange.mockClear();
-    mockOnPreviousPage.mockClear();
-    mockOnNextPage.mockClear();
+    jest.clearAllMocks();
   });
 
-  it('renders pagination buttons correctly', () => {
-    render(
+  test('renders nothing when totalPages is 0 or 1', () => {
+    const { container: c1 } = render(
       <Pagination
         currentPage={1}
-        totalPages={5}
+        totalPages={0}
         hasPrev={false}
-        hasNext={true}
-        onPreviousPage={mockOnPreviousPage}
-        onNextPage={mockOnNextPage}
-        onPageChange={mockOnPageChange}
-      />
-    );
-
-    expect(screen.getByText('1')).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument();
-    expect(screen.getByText('5')).toBeInTheDocument();
-  });
-
-  it('calls onPageChange when a page button is clicked', () => {
-    render(
-      <Pagination
-        currentPage={1}
-        totalPages={5}
-        hasPrev={false}
-        hasNext={true}
-        onPreviousPage={mockOnPreviousPage}
-        onNextPage={mockOnNextPage}
-        onPageChange={mockOnPageChange}
-      />
-    );
-
-    fireEvent.click(screen.getByText('2'));
-    expect(mockOnPageChange).toHaveBeenCalledWith(2);
-  });
-
-  it('disables previous button on the first page', () => {
-    render(
-      <Pagination
-        currentPage={1}
-        totalPages={5}
-        hasPrev={false}
-        hasNext={true}
-        onPreviousPage={mockOnPreviousPage}
-        onNextPage={mockOnNextPage}
-        onPageChange={mockOnPageChange}
-      />
-    );
-
-    expect(screen.getByTestId('pagination-prev')).toBeDisabled();
-  });
-
-  it('disables next button on the last page', () => {
-    render(
-      <Pagination
-        currentPage={5}
-        totalPages={5}
-        hasPrev={true}
         hasNext={false}
-        onPreviousPage={mockOnPreviousPage}
-        onNextPage={mockOnNextPage}
-        onPageChange={mockOnPageChange}
+        onPreviousPage={onPrev}
+        onNextPage={onNext}
+        onPageChange={onChange}
       />
     );
+    expect(c1.firstChild).toBeNull();
 
-    expect(screen.getByTestId('pagination-next')).toBeDisabled();
-  });
-
-  it('renders correctly when totalPages is less than maxVisiblePages', () => {
-    render(
+    const { container: c2 } = render(
       <Pagination
         currentPage={1}
-        totalPages={3}
+        totalPages={1}
         hasPrev={false}
-        hasNext={true}
-        onPreviousPage={mockOnPreviousPage}
-        onNextPage={mockOnNextPage}
-        onPageChange={mockOnPageChange}
+        hasNext={false}
+        onPreviousPage={onPrev}
+        onNextPage={onNext}
+        onPageChange={onChange}
       />
     );
-
-    expect(screen.getByText('1')).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument();
-    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(c2.firstChild).toBeNull();
   });
 
-  it('renders correctly when currentPage is in the middle of the range', () => {
+  test('renders all pages when totalPages <= maxVisiblePages (5)', () => {
     render(
       <Pagination
         currentPage={3}
         totalPages={5}
-        hasPrev={true}
-        hasNext={true}
-        onPreviousPage={mockOnPreviousPage}
-        onNextPage={mockOnNextPage}
-        onPageChange={mockOnPageChange}
+        hasPrev
+        hasNext
+        onPreviousPage={onPrev}
+        onNextPage={onNext}
+        onPageChange={onChange}
+        className="extra"
       />
     );
 
-    expect(screen.getByText('2')).toBeInTheDocument();
-    expect(screen.getByText('3')).toBeInTheDocument();
-    expect(screen.getByText('4')).toBeInTheDocument();
+    expect(screen.getByTestId('pagination')).toHaveClass('extra');
+    expect(screen.getByTestId('pagination-prev')).toBeEnabled();
+    expect(screen.getByTestId('pagination-next')).toBeEnabled();
+
+    for (let i = 1; i <= 5; i++) {
+      const btn = screen.getByTestId(`pagination-page-${i}`);
+      expect(btn).toBeInTheDocument();
+      if (i === 3) {
+        expect(btn).toBeDisabled();
+      } else {
+        expect(btn).toBeEnabled();
+        fireEvent.click(btn);
+        expect(onChange).toHaveBeenLastCalledWith(i);
+      }
+    }
+
+    expect(screen.queryByTestId('pagination-first')).toBeNull();
+    expect(screen.queryByTestId('pagination-last')).toBeNull();
+    expect(screen.queryByTestId('pagination-ellipsis-start')).toBeNull();
+    expect(screen.queryByTestId('pagination-ellipsis-end')).toBeNull();
+
+    fireEvent.click(screen.getByTestId('pagination-prev'));
+    expect(onPrev).toHaveBeenCalled();
+
+    fireEvent.click(screen.getByTestId('pagination-next'));
+    expect(onNext).toHaveBeenCalled();
   });
 
-  it('renders first page button and ellipsis when startPage > 1', () => {
-    render(
-      <Pagination
-        currentPage={5}
-        totalPages={10}
-        hasPrev={true}
-        hasNext={true}
-        onPreviousPage={mockOnPreviousPage}
-        onNextPage={mockOnNextPage}
-        onPageChange={mockOnPageChange}
-      />
-    );
+  describe('when totalPages > maxVisiblePages', () => {
+    test('at the start: currentPage <= 2', () => {
+      render(
+        <Pagination
+          currentPage={1}
+          totalPages={10}
+          hasPrev={false}
+          hasNext
+          onPreviousPage={onPrev}
+          onNextPage={onNext}
+          onPageChange={onChange}
+        />
+      );
 
-    expect(screen.getByTestId('pagination-first')).toBeInTheDocument();
-    expect(screen.getByTestId('pagination-ellipsis-start')).toBeInTheDocument();
+      for (let i = 1; i <= 5; i++) {
+        expect(screen.getByTestId(`pagination-page-${i}`)).toBeInTheDocument();
+      }
+
+      expect(screen.queryByTestId('pagination-first')).toBeNull();
+      expect(screen.queryByTestId('pagination-ellipsis-start')).toBeNull();
+
+      expect(screen.getByTestId('pagination-ellipsis-end')).toBeInTheDocument();
+      const lastBtn = screen.getByTestId('pagination-last');
+      expect(lastBtn).toBeInTheDocument();
+      expect(lastBtn).toHaveTextContent('10');
+      expect(lastBtn).toBeEnabled();
+    });
+
+    test('in the middle: shows both ellipses and first/last shortcuts', () => {
+      render(
+        <Pagination
+          currentPage={5}
+          totalPages={10}
+          hasPrev
+          hasNext
+          onPreviousPage={onPrev}
+          onNextPage={onNext}
+          onPageChange={onChange}
+        />
+      );
+
+      expect(screen.getByTestId('pagination-first')).toBeInTheDocument();
+      expect(screen.getByTestId('pagination-first')).toHaveTextContent('1');
+      expect(
+        screen.getByTestId('pagination-ellipsis-start')
+      ).toBeInTheDocument();
+
+      for (let i = 3; i <= 7; i++) {
+        const btn = screen.getByTestId(`pagination-page-${i}`);
+        expect(btn).toBeInTheDocument();
+        if (i === 5) {
+          expect(btn).toBeDisabled();
+        } else {
+          fireEvent.click(btn);
+          expect(onChange).toHaveBeenLastCalledWith(i);
+        }
+      }
+
+      expect(screen.getByTestId('pagination-ellipsis-end')).toBeInTheDocument();
+      expect(screen.getByTestId('pagination-last')).toBeInTheDocument();
+    });
+
+    test('at the end: currentPage + after >= totalPages', () => {
+      render(
+        <Pagination
+          currentPage={9}
+          totalPages={10}
+          hasPrev
+          hasNext={false}
+          onPreviousPage={onPrev}
+          onNextPage={onNext}
+          onPageChange={onChange}
+        />
+      );
+
+      for (let i = 6; i <= 10; i++) {
+        expect(screen.getByTestId(`pagination-page-${i}`)).toBeInTheDocument();
+      }
+
+      expect(screen.getByTestId('pagination-first')).toBeInTheDocument();
+      expect(
+        screen.getByTestId('pagination-ellipsis-start')
+      ).toBeInTheDocument();
+      expect(screen.queryByTestId('pagination-ellipsis-end')).toBeNull();
+      expect(screen.queryByTestId('pagination-last')).toBeNull();
+
+      expect(screen.getByTestId('pagination-prev')).toBeEnabled();
+      expect(screen.getByTestId('pagination-next')).toBeDisabled();
+    });
   });
 });

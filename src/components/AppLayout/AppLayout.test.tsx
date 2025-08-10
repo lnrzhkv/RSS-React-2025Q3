@@ -1,84 +1,57 @@
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import AppLayout from './AppLayout';
-import { GlobalProvider } from '../../context/GlobalContext';
+import { ThemeProvider } from '../../context/ThemeContext';
+import * as useThemeContext from '../../context/hooks/useThemeContext';
 
-const MockChild = () => (
-  <div data-testid="mock-child">Mock Child Component</div>
-);
-
-jest.mock('../../context/hooks/useGlobalContext', () => ({
-  useGlobalContext: () => ({
-    theme: 'light',
-  }),
+jest.mock('../../components/Navigation/Navigation', () => ({
+  __esModule: true,
+  default: () => <nav data-testid="mocked-navigation">Mock Navigation</nav>,
 }));
 
-jest.mock('../../components/Navigation/Navigation', () => {
-  function MockedNavigation() {
-    return <nav data-testid="mocked-navigation">Mock Navigation</nav>;
-  }
-  return MockedNavigation;
-});
+jest.mock('../../context/hooks/useThemeContext', () => ({
+  useThemeContext: jest.fn(),
+}));
 
 describe('AppLayout Component', () => {
-  it('renders the layout container', () => {
-    render(
-      <MemoryRouter>
-        <GlobalProvider>
-          <AppLayout />
-        </GlobalProvider>
-      </MemoryRouter>
-    );
-    expect(screen.getByTestId('layout-container')).toBeInTheDocument();
+  beforeEach(() => {
+    (useThemeContext.useThemeContext as jest.Mock).mockReturnValue({
+      theme: 'light',
+      toggleTheme: jest.fn(),
+    });
   });
 
-  it('includes the Navigation component', () => {
-    render(
+  it('applies theme classes when theme changes', () => {
+    (useThemeContext.useThemeContext as jest.Mock).mockReturnValue({
+      theme: 'dark',
+      toggleTheme: jest.fn(),
+    });
+
+    const { rerender } = render(
       <MemoryRouter>
-        <GlobalProvider>
+        <ThemeProvider>
           <AppLayout />
-        </GlobalProvider>
-      </MemoryRouter>
-    );
-    expect(screen.getByTestId('mocked-navigation')).toBeInTheDocument();
-  });
-
-  it('renders the Outlet content when nested routes are provided', () => {
-    render(
-      <MemoryRouter initialEntries={['/']}>
-        <GlobalProvider>
-          <Routes>
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<MockChild />} />
-            </Route>
-          </Routes>
-        </GlobalProvider>
+        </ThemeProvider>
       </MemoryRouter>
     );
 
-    expect(screen.getByTestId('mock-child')).toBeInTheDocument();
-  });
-
-  it('has the correct CSS class applied', () => {
-    render(
-      <MemoryRouter>
-        <GlobalProvider>
-          <AppLayout />
-        </GlobalProvider>
-      </MemoryRouter>
-    );
     const container = screen.getByTestId('layout-container');
-    expect(container).toHaveClass('appContainer');
-  });
+    expect(container).toHaveClass('dark');
 
-  it('contains the outlet slot div', () => {
-    render(
+    (useThemeContext.useThemeContext as jest.Mock).mockReturnValue({
+      theme: 'light',
+      toggleTheme: jest.fn(),
+    });
+
+    rerender(
       <MemoryRouter>
-        <GlobalProvider>
+        <ThemeProvider>
           <AppLayout />
-        </GlobalProvider>
+        </ThemeProvider>
       </MemoryRouter>
     );
-    expect(screen.getByTestId('outlet-slot')).toBeInTheDocument();
+
+    expect(container).toHaveClass('light');
+    expect(container).not.toHaveClass('dark');
   });
 });

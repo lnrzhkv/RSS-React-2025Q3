@@ -1,127 +1,118 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import PokemonList from './PokemonList';
 import { Provider } from 'react-redux';
-import { store } from '../../shared/store';
-import { useGlobalContext } from '../../context/hooks/useGlobalContext';
+import * as apiSlice from '../../shared/api/apiSlice';
+import { store } from '../../shared/store/store';
 
-jest.mock('../../context/hooks/useGlobalContext', () => ({
-  useGlobalContext: jest.fn(),
+jest.mock('../../shared/api/apiSlice', () => ({
+  ...jest.requireActual('../../shared/api/apiSlice'),
+  useLazyGetPokemonsQuery: jest.fn(),
+  useLazySearchPokemonQuery: jest.fn(),
 }));
 
-const mockUseGlobalContext = useGlobalContext as jest.Mock;
+const mockCharacters = Array(10)
+  .fill(undefined)
+  .map((_, idx) => ({
+    id: idx + 1,
+    name: `Pikachu ${idx + 1}`,
+    height: 4,
+    weight: 60,
+    image: 'pikachu.png',
+    types: [],
+  }));
 
 describe('PokemonList', () => {
-  const mockContext = {
-    characters: Array(10)
-      .fill(null)
-      .map((_, index) => ({
-        id: index + 1,
-        name: `Pikachu ${index + 1}`,
-        height: 4,
-        weight: 60,
-        image: 'pikachu.png',
-        types: [],
-      })),
-    error: null,
-    loading: false,
-    isDetailsOpen: false,
-    searchValue: '',
-    theme: 'light' as const,
-    toggleTheme: jest.fn(),
-    onChangeSearchValue: jest.fn(),
-    fetchPokemons: jest.fn(),
-    fetchCharacterBySearch: jest.fn(),
-    setIsDetailsOpen: jest.fn(),
-    pagination: {
-      currentPage: '1',
-      totalPages: 2,
-      hasNext: true,
-      hasPrev: false,
-      onPreviousPage: jest.fn(),
-      onNextPage: jest.fn(),
-      onPageChange: jest.fn(),
-    },
-  };
+  let mockTriggerGetPokemons: jest.Mock;
+  let mockTriggerSearch: jest.Mock;
 
   beforeEach(() => {
-    mockUseGlobalContext.mockReturnValue(mockContext);
+    mockTriggerGetPokemons = jest.fn();
+    mockTriggerSearch = jest.fn();
+
+    (apiSlice.useLazyGetPokemonsQuery as jest.Mock).mockReturnValue([
+      mockTriggerGetPokemons,
+    ]);
+    (apiSlice.useLazySearchPokemonQuery as jest.Mock).mockReturnValue([
+      mockTriggerSearch,
+    ]);
+
+    jest.clearAllMocks();
   });
 
-  const renderPokemonList = () => {
-    return render(
+  const renderComponent = () =>
+    render(
       <MemoryRouter>
         <Provider store={store}>
           <PokemonList />
         </Provider>
       </MemoryRouter>
     );
-  };
 
-  it('renders main layout structure', () => {
-    renderPokemonList();
+  it('renders layout and core components with fetched characters', async () => {
+    mockTriggerGetPokemons.mockReturnValue({
+      unwrap: () =>
+        Promise.resolve({
+          results: mockCharacters,
+          count: 20,
+          next: 'next-url',
+          previous: null,
+        }),
+    });
+
+    renderComponent();
+
+    await waitFor(() => {
+      mockCharacters.forEach((char) => {
+        expect(screen.getByText(char.name)).toBeInTheDocument();
+      });
+    });
 
     expect(screen.getByTestId('pokemonlist-content')).toBeInTheDocument();
-    expect(screen.getByTestId('pokemonlist-listcontainer')).toBeInTheDocument();
-    expect(screen.getByTestId('pokemonlist-topsection')).toBeInTheDocument();
-    expect(screen.getByTestId('pokemonlist-footer')).toBeInTheDocument();
-  });
-
-  it('renders core components', () => {
-    renderPokemonList();
-
     expect(screen.getByText('Pokémon Search')).toBeInTheDocument();
     expect(screen.getByText('Search Results')).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText('Search Pokémon...')
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Search' })).toBeInTheDocument();
   });
 
-  it('renders characters list', () => {
-    renderPokemonList();
+  it('shows loader while fetching data', async () => {
+    mockTriggerGetPokemons.mockReturnValue({
+      unwrap: () => new Promise(() => {}),
+    });
 
-    mockContext.characters.forEach((character) => {
-      expect(screen.getByText(character.name)).toBeInTheDocument();
+    renderComponent();
+
+    expect(await screen.findByTestId('loader')).toBeInTheDocument();
+  });
+
+  it('shows error message on fetch failure', async () => {
+    mockTriggerGetPokemons.mockReturnValue({
+      unwrap: () => Promise.reject(new Error('fail')),
+    });
+
+    renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to fetch pokemons')).toBeInTheDocument();
     });
   });
 
-  it('shows loader when loading', () => {
-    mockUseGlobalContext.mockReturnValue({
-      ...mockContext,
-      loading: true,
-      characters: [],
+  it('shows "No Pokémon found" when list is empty', async () => {
+    mockTriggerGetPokemons.mockReturnValue({
+      unwrap: () =>
+        Promise.resolve({
+          results: [],
+          count: 0,
+          next: null,
+          previous: null,
+        }),
     });
 
-    renderPokemonList();
+    renderComponent();
 
-    expect(screen.getByTestId('loader')).toBeInTheDocument();
-    expect(screen.getByText('Search Results')).toBeInTheDocument();
-  });
-
-  it('shows error message when error exists', () => {
-    const errorMessage = 'Test error message';
-    mockUseGlobalContext.mockReturnValue({
-      ...mockContext,
-      error: errorMessage,
+    await waitFor(() => {
+      expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
     });
-
-    renderPokemonList();
-
-    expect(screen.getByText('Error')).toBeInTheDocument();
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
-    expect(screen.getByText('Search Results')).toBeInTheDocument();
-  });
-
-  it('shows no results message when characters empty', () => {
-    mockUseGlobalContext.mockReturnValue({
-      ...mockContext,
-      characters: [],
-    });
-
-    renderPokemonList();
-
-    expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
-    expect(screen.getByText('Search Results')).toBeInTheDocument();
   });
 });

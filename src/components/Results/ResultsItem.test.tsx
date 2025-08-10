@@ -1,130 +1,93 @@
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ResultsItem from './ResultsItem';
-import type { CharacterWithImage } from '../../services/api/types';
 import { Provider } from 'react-redux';
-import { store } from '../../shared/store';
+import { configureStore } from '@reduxjs/toolkit';
+import selectedItemsReducer from '../../shared/store/selectedItemsSlice';
+import type { CharacterWithImage } from '../../shared/api/types';
 
-describe('ResultsItem Component', () => {
-  const mockCharacter: CharacterWithImage = {
+describe('ResultsItem (with real Redux store)', () => {
+  const character: CharacterWithImage = {
     id: 1,
     name: 'Pikachu',
-    height: 40,
-    weight: 60,
-    image:
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
+    height: 4,
+    weight: 6,
+    image: 'https://img.url/pikachu.png',
     types: [
       {
         slot: 1,
         type: {
           name: 'electric',
-          url: 'https://pokeapi.co/api/v2/type/13/',
-        },
-      },
-      {
-        slot: 2,
-        type: {
-          name: 'flying',
-          url: 'https://pokeapi.co/api/v2/type/3/',
+          url: 'https://pokeapi.co/type/electric',
         },
       },
     ],
   };
 
-  const renderWithProvider = (character: CharacterWithImage) => {
-    return render(
+  function renderWithStore() {
+    const store = configureStore({
+      reducer: { selectedItems: selectedItemsReducer },
+    });
+    render(
       <Provider store={store}>
         <ResultsItem character={character} />
       </Provider>
     );
-  };
+    return store;
+  }
 
-  test('renders character card with correct data', () => {
-    renderWithProvider(mockCharacter);
+  it('initially renders unchecked, then adds item to store on check', () => {
+    const store = renderWithStore();
 
-    const card = screen.getByTestId(`character-card-${mockCharacter.id}`);
-    expect(card).toBeInTheDocument();
-    expect(screen.getByText(mockCharacter.name)).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        `Height: ${mockCharacter.height}, Weight: ${mockCharacter.weight}`
-      )
-    ).toBeInTheDocument();
-
-    const typeText = screen.getByText(/Types:/).textContent;
-    mockCharacter.types.forEach((type) => {
-      expect(typeText).toContain(type.type.name);
+    const checkbox = screen.getByRole('checkbox', {
+      name: /select-pikachu/i,
     });
+    expect(checkbox).not.toBeChecked();
+
+    fireEvent.click(checkbox);
+
+    const itemsState = store.getState().selectedItems;
+    expect(itemsState).toHaveLength(1);
+    expect(itemsState[0]).toEqual({
+      id: '1',
+      name: 'Pikachu',
+      description: 'Height: 4, Weight: 6',
+      detailsUrl: '/details/1',
+    });
+
+    expect(checkbox).toBeChecked();
   });
 
-  test('handles character with single type', () => {
-    const singleTypeCharacter: CharacterWithImage = {
-      id: 2,
-      name: 'Bulbasaur',
-      height: 70,
-      weight: 69,
-      image:
-        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
-      types: [
-        {
-          slot: 1,
-          type: {
-            name: 'grass',
-            url: 'https://pokeapi.co/api/v2/type/12/',
-          },
-        },
-      ],
-    };
+  it('removes item from store on uncheck', () => {
+    const store = renderWithStore();
 
-    renderWithProvider(singleTypeCharacter);
-    const typeText = screen.getByText(/Types:/).textContent;
-    expect(typeText).toContain('grass');
+    const checkbox = screen.getByRole('checkbox', {
+      name: /select-pikachu/i,
+    });
+
+    fireEvent.click(checkbox);
+    expect(store.getState().selectedItems).toHaveLength(1);
+    expect(checkbox).toBeChecked();
+
+    fireEvent.click(checkbox);
+    expect(store.getState().selectedItems).toHaveLength(0);
+    expect(checkbox).not.toBeChecked();
   });
 
-  test('handles character without types', () => {
-    const noTypeCharacter: CharacterWithImage = {
-      id: 3,
-      name: 'Missingno',
-      height: 0,
-      weight: 0,
-      image:
-        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
-      types: [],
-    };
+  it('renders all character info correctly', () => {
+    renderWithStore();
 
-    renderWithProvider(noTypeCharacter);
-    expect(screen.getByText('Types:')).toBeInTheDocument();
-  });
+    expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent(
+      'Pikachu'
+    );
+    expect(screen.getByText('Height: 4, Weight: 6')).toBeInTheDocument();
+    expect(screen.getByText('Types: electric')).toBeInTheDocument();
 
-  test('renders all types regardless of order', () => {
-    const multiTypeCharacter: CharacterWithImage = {
-      id: 4,
-      name: 'Charizard',
-      height: 170,
-      weight: 905,
-      image:
-        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
-      types: [
-        {
-          slot: 2,
-          type: {
-            name: 'flying',
-            url: 'https://pokeapi.co/api/v2/type/3/',
-          },
-        },
-        {
-          slot: 1,
-          type: {
-            name: 'fire',
-            url: 'https://pokeapi.co/api/v2/type/10/',
-          },
-        },
-      ],
-    };
+    const img = screen.getByRole('img', { name: 'Pikachu' });
+    expect(img).toHaveAttribute('src', 'https://img.url/pikachu.png');
 
-    renderWithProvider(multiTypeCharacter);
-    const typeText = screen.getByText(/Types:/).textContent;
-    expect(typeText).toContain('fire');
-    expect(typeText).toContain('flying');
+    const checkbox = screen.getByRole('checkbox', {
+      name: /select-pikachu/i,
+    });
+    expect(checkbox).not.toBeChecked();
   });
 });

@@ -4,7 +4,7 @@ const config = {
   preset: 'ts-jest',
   testEnvironment: 'jest-environment-jsdom',
   rootDir: '.',
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts', '<rootDir>/src/setupTests.ts'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },

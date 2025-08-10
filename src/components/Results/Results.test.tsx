@@ -1,69 +1,118 @@
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import Results from './Results';
-import { GlobalContext } from '../../context/GlobalContext';
-import type { ContextProps } from '../../context/GlobalContext';
-import { BrowserRouter } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import type { CharacterWithImage } from '../../shared/api/types';
 
-const mockContext = {
-  searchValue: '',
-  onChangeSearchValue: jest.fn(),
-  characters: [],
-  loading: false,
-  error: null,
-  fetchPokemons: jest.fn(),
-  fetchCharacterBySearch: jest.fn(),
-  isDetailsOpen: false,
-  setIsDetailsOpen: jest.fn(),
-  pagination: {
-    onPageChange: jest.fn(),
-    currentPage: '1',
-    hasNext: false,
-    hasPrev: false,
-    onPreviousPage: jest.fn(),
-    onNextPage: jest.fn(),
-    totalPages: 1,
-  },
-  theme: 'light' as const,
-  toggleTheme: jest.fn(),
-} satisfies ContextProps;
+jest.mock('./Loader', () => {
+  const MockLoader: React.FC = () => <div data-testid="loader-mock" />;
+  MockLoader.displayName = 'MockLoader';
+  return MockLoader;
+});
 
-describe('Results Component', () => {
+jest.mock('./ResultsItem', () => {
+  const MockResultsItem: React.FC<{ character: CharacterWithImage }> = ({
+    character,
+  }) => <div data-testid={`result-item-${character.id}`}>{character.name}</div>;
+  MockResultsItem.displayName = 'MockResultsItem';
+  return MockResultsItem;
+});
+
+jest.mock('react-router-dom', () => ({
+  useSearchParams: jest.fn(),
+}));
+
+describe('Results', () => {
+  const setSearchParams = jest.fn();
+  const fakeSearchParams = new URLSearchParams('foo=bar');
+
   beforeEach(() => {
     jest.clearAllMocks();
+    (useSearchParams as jest.Mock).mockReturnValue([
+      fakeSearchParams,
+      setSearchParams,
+    ]);
   });
 
-  test('renders loader when loading', () => {
+  it('renders Loader when loading=true and characters empty', () => {
     render(
-      <BrowserRouter>
-        <GlobalContext.Provider value={{ ...mockContext, loading: true }}>
-          <Results />
-        </GlobalContext.Provider>
-      </BrowserRouter>
+      <Results
+        characters={[]}
+        loading={true}
+        error={null}
+        setIsDetailsOpen={jest.fn()}
+      />
     );
-    expect(screen.getByTestId('loader')).toBeInTheDocument();
+    expect(screen.getByTestId('loader-mock')).toBeInTheDocument();
   });
 
-  test('renders error when error exists', () => {
+  it('renders error message when error is set', () => {
     render(
-      <BrowserRouter>
-        <GlobalContext.Provider value={{ ...mockContext, error: 'Test error' }}>
-          <Results />
-        </GlobalContext.Provider>
-      </BrowserRouter>
+      <Results
+        characters={[]}
+        loading={false}
+        error="Boom!"
+        setIsDetailsOpen={jest.fn()}
+      />
     );
     expect(screen.getByText('Error')).toBeInTheDocument();
-    expect(screen.getByText('Test error')).toBeInTheDocument();
+    expect(screen.getByText('Boom!')).toBeInTheDocument();
   });
 
-  test('renders no results message when characters empty', () => {
+  it('renders "No Pokémon found" when no characters, no loading/error', () => {
     render(
-      <BrowserRouter>
-        <GlobalContext.Provider value={{ ...mockContext, characters: [] }}>
-          <Results />
-        </GlobalContext.Provider>
-      </BrowserRouter>
+      <Results
+        characters={[]}
+        loading={false}
+        error={null}
+        setIsDetailsOpen={jest.fn()}
+      />
     );
     expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
+  });
+
+  it('renders list of characters and handles clicks', () => {
+    const characters: CharacterWithImage[] = [
+      {
+        id: 1,
+        name: 'Pikachu',
+        height: 4,
+        weight: 6,
+        image: 'img1',
+        types: [],
+      },
+      {
+        id: 2,
+        name: 'Bulbasaur',
+        height: 7,
+        weight: 9,
+        image: 'img2',
+        types: [],
+      },
+    ];
+    const setIsDetailsOpen = jest.fn();
+
+    render(
+      <Results
+        characters={characters}
+        loading={false}
+        error={null}
+        setIsDetailsOpen={setIsDetailsOpen}
+      />
+    );
+
+    expect(screen.getByTestId('results-container')).toBeInTheDocument();
+
+    characters.forEach((char, idx) => {
+      const item = screen.getByTestId(`result-item-${char.id}`);
+      expect(item).toHaveTextContent(char.name);
+
+      fireEvent.click(item);
+
+      const callArg = setSearchParams.mock.calls[idx][0] as URLSearchParams;
+      expect(callArg.get('characterId')).toBe(String(char.id));
+
+      expect(setIsDetailsOpen).toHaveBeenCalledWith(true);
+    });
   });
 });
