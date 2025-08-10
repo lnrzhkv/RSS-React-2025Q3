@@ -13,12 +13,9 @@ const LIMIT = 10;
 export const usePagination = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-
   const [paginationData, setPaginationData] = useState<PaginationState | null>(
     null
   );
-
-  const currentPage = String(Number(searchParams.get('page')) || DEFAULT_PAGE);
 
   const totalPages = paginationData
     ? Math.ceil(paginationData.count / LIMIT)
@@ -27,18 +24,32 @@ export const usePagination = () => {
   const hasNext = Boolean(paginationData?.next);
   const hasPrev = Boolean(paginationData?.previous);
 
+  const getInitialPage = () => {
+    const pageParam = searchParams.get('page');
+    if (pageParam && !isNaN(Number(pageParam))) {
+      return String(Number(pageParam));
+    }
+    return String(sessionStorage.getItem('pokemonListPage') || DEFAULT_PAGE);
+  };
+
+  const [currentPage, setCurrentPage] = useState(getInitialPage());
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (!params.get('page')) {
-      params.set('page', String(DEFAULT_PAGE));
+      const savedPage =
+        sessionStorage.getItem('pokemonListPage') || DEFAULT_PAGE;
+      params.set('page', String(savedPage));
       setSearchParams(params, { replace: true });
     }
-  }, [location.search]);
+  }, [location.search, setSearchParams]);
 
   const setPage = (page: number) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', String(page));
     setSearchParams(params, { replace: true });
+    setCurrentPage(String(page));
+    sessionStorage.setItem('pokemonListPage', String(page));
   };
 
   const updatePaginationData = (data: PaginationState) => {
