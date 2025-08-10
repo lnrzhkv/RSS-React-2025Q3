@@ -1,4 +1,4 @@
-import type { CharacterWithImage } from '../../services/api/types';
+import type { CharacterWithImage } from '../../shared/api/types';
 
 export const mockCharacters: CharacterWithImage[] = [
   {
