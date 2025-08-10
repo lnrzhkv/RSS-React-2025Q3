@@ -1,12 +1,12 @@
 .container {
-  max-width: 500px;
+  max-width: var(--max-width-sm);
   position: sticky;
   height: fit-content;
   top: 1rem;
 }
 
 .errorContainer {
-  padding: 20px;
+  padding: var(--padding-xl);
   background-color: var(--error-bg);
   border: 1px solid var(--error-border);
   border-radius: var(--border-radius);
@@ -14,36 +14,37 @@
 }
 
 .errorTitle {
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
   margin-top: 0;
 }
 
 .close {
   position: absolute;
-  top: 0px;
+  top: -3px;
   right: 0px;
   cursor: pointer;
-  padding: 20px;
+  padding: var(--padding-xl);
   color: var(--text-color);
 }
 
 
 .name {
-  margin-bottom: 1rem;
-  font-size: 3rem;
-  font-weight: bold;
+  margin-bottom: var(--margin-md);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
   color: var(--primary-color);
+  margin-top: var(--margin-md);
 }
 
 
 .ul {
   padding: 0;
-  padding-left: 20px;
+  padding-left: var(--padding-xl);
   list-style-type: square;
 }
 
 .li {
-  padding: 4px 2px;
+  padding: var(--padding-xs) var(--padding-xxs);
   border-bottom: 1px dotted var(--border-color);
 }
 
@@ -54,4 +55,33 @@
 .liWrapper {
   display: flex;
   justify-content: space-between;
+}
+
+.refreshButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--padding-xl);
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+.refreshIcon {
+  font-size: var(--font-size-base);
+  color: var(--refresh-icon);
+  transition: transform 0.3s ease;
+}
+
+.refreshIcon:hover {
+  color: var(--refresh-icon-hover);
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

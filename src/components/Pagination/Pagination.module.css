@@ -2,20 +2,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
-  gap: 5px;
+  margin-top: var(--margin-lg);
+  gap: var(--gap-xs);
 }
 
 .pageButton {
-  padding: 8px 12px;
+  padding: var(--padding-s) var(--padding-md);
   background-color: var(--pagination-bg);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
-  font-size: 16px;
+  font-size: var(--font-size-base);
   transition: background-color 0.3s;
-  min-width: 40px;
+  min-width: var(--min-button-width);
 }
 
 .pageButton:hover:not(.disabled) {
@@ -24,7 +24,7 @@
 
 .pageButton.active {
   background-color: var(--pagination-active);
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .pageButton.disabled {
@@ -33,6 +33,6 @@
 }
 
 .ellipsis {
-  padding: 8px;
-  font-size: 16px;
+  padding: var(--padding-s);
+  font-size: var(--font-size-base);
 }

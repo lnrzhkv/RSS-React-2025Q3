@@ -1,21 +1,21 @@
 .errorBoundary {
-  padding: 30px;
+  padding: var(--padding-xxl);
   background-color: var(--error-bg);
   border: 1px solid var(--error-border);
   border-radius: var(--border-radius);
   color: var(--primary-color);
   text-align: center;
-  max-width: 700px;
+  max-width: var(--max-width-lg);
   margin: 0 auto;
-  margin-top: 40px;
+  margin-top: var(--margin-xxl);
 }
 
 .title {
   color: var(--primary-color);
-  font-size: 1.5rem;
+  font-size: var(--font-size-lg);
 }
 
 .message {
-  font-weight: bold;
-  margin: 10px 0;
+  font-weight: var(--font-weight-bold);
+  margin: var(--margin-sm) 0;
 }

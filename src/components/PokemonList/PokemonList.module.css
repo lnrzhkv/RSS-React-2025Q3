@@ -1,8 +1,8 @@
 
 .content {
   display: flex;
-  width: 100%;
-  gap: 2rem;
+  width: var(--width-100);
+  gap: var(--gap-xxl);
   justify-content: center;
 }
 
@@ -10,37 +10,57 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  width: var(--width-100);
 }
 
 .rightPart {
-  max-width: 600px;
+  max-width: var(--max-width-md);
 }
 
 
 .topSection {
-  margin-bottom: 30px;
+  margin-bottom: var(--margin-xl);
 }
 
 .appTitle {
   color: var(--primary-color);
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--margin-lg);
 }
 
 
 .sectionTitle {
   color: var(--secondary-color);
   margin-top: 0;
-  width: 100%;
+  width: var(--width-100);
   text-align: center;
 }
 
 .footer {
-  margin-top: 30px;
+  margin-top: var(--margin-xl);
   text-align: center;
+  display: flex;
+  gap: var(--gap-xxl);
 }
 
 .topPagination {
-  margin-bottom: 1rem;
+  margin-bottom: var(--margin-md);
 }
+
+
+.refreshButton {
+  padding: var(--padding-s) var(--padding-lg);
+  background-color: var(--refresh-button-bg);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: var(--font-size-base);
+}
+
+.refreshButton:hover {
+  background-color: var(--refresh-button-hover);
+}
+
+

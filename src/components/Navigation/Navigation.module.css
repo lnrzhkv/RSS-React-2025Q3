@@ -2,19 +2,19 @@
   max-width: var(--max-width);
   display: flex;
   justify-content: center;
-  gap: 20px;
-  padding: 15px;
+  gap: var(--gap-lg);
+  padding: var(--padding-lg);
   background-color: var(--nav-bg);
-  border-radius: var(--border-radius);
-  margin: 0 auto 20px;
+  border-radius: var(--border-radius-md);
+  margin: 0 auto var(--margin-lg);
 }
 
 .navLink {
   color: var(--primary-color);
   text-decoration: none;
-  font-weight: 500;
-  padding: 5px 10px;
-  border-radius: 4px;
+  font-weight: var(--font-weight-md);
+  padding: var(--padding-xs) var(--padding-base);
+  border-radius: var(--border-radius-sm);
   transition: background-color 0.2s;
   cursor: pointer;
 }
@@ -26,7 +26,7 @@
 .themeToggle {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: var(--font-size-lg);
   cursor: pointer;
   color: var(--text-color);
   transition: var(--transition);

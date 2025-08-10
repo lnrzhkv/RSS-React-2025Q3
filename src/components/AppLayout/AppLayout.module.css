@@ -1,12 +1,21 @@
 .appContainer {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 20px;
+  padding: var(--padding-xl);
   background-color: var(--background-color);
   color: var(--text-color);
   transition: var(--transition);
-  margin-top: 50px;
-  margin-bottom: 90px;
-  border-radius: 20px;
-  font-family: "Gruppo", sans-serif;
+  margin-top: var(--margin-2xl);
+  margin-bottom: var(--margin-3xl);
+  border-radius: var(--border-radius-lg);
+}
+
+.appContainer.light {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.appContainer.dark {
+  background-color: #333333;
+  color: #ffffff;
 }
