@@ -1,18 +1,16 @@
 import React from 'react';
 import styles from './Navigation.module.css';
 import { useNavigate } from 'react-router-dom';
-import { useGlobalContext } from '../../context/hooks/useGlobalContext';
+import { useThemeContext } from '../../context/hooks/useThemeContext';
 
 const Navigation: React.FC = () => {
   const navigator = useNavigate();
-  const { onChangeSearchValue, fetchPokemons, toggleTheme, theme } =
-    useGlobalContext();
+  const { toggleTheme, theme } = useThemeContext();
 
-  const handleNavigate = (from: string) => {
-    onChangeSearchValue('');
-    fetchPokemons(1);
-    navigator(from);
+  const handleNavigate = (path: string) => {
+    navigator(path);
   };
+
   return (
     <nav data-testid={'nav'} className={styles.nav}>
       <div
@@ -29,7 +27,11 @@ const Navigation: React.FC = () => {
       >
         About
       </div>
-      <button onClick={toggleTheme} className={styles.themeToggle}>
+      <button
+        onClick={toggleTheme}
+        className={styles.themeToggle}
+        aria-label="Toggle theme"
+      >
         {theme === 'light' ? '☾' : '☀︎'}
       </button>
     </nav>

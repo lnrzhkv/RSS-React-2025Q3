@@ -1,18 +1,18 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AppLayout from '../AppLayout/AppLayout';
-import { GlobalProvider } from '../../context/GlobalContext';
 import AboutPage from '../../pages/AboutPage/AboutPage';
 import NotFoundPage from '../../pages/NotFoundPage/NotFoundPage';
 import PokemonList from '../PokemonList/PokemonList';
 import { Provider } from 'react-redux';
-import { store } from '../../shared/store';
+import { store } from '../../shared/store/store';
+import { ThemeProvider } from '../../context/ThemeContext';
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Provider store={store}>
-        <GlobalProvider>
+        <ThemeProvider>
           <Routes>
             <Route path="/" element={<AppLayout />}>
               <Route index element={<PokemonList />} />
@@ -20,7 +20,7 @@ const App: React.FC = () => {
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>
-        </GlobalProvider>
+        </ThemeProvider>
       </Provider>
     </BrowserRouter>
   );
