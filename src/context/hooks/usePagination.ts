@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+'use client';
+import { useCallback, useEffect, useState, useMemo } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 interface PaginationState {
   next: string | null;
@@ -10,51 +12,50 @@ interface PaginationState {
 const DEFAULT_PAGE = 1;
 const LIMIT = 10;
 
-export const usePagination = () => {
-  const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
+export function usePagination() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const getCurrentPage = useCallback(() => {
+    const p = Number(searchParams.get('page'));
+    return !isNaN(p) && p > 0 ? p : DEFAULT_PAGE;
+  }, [searchParams]);
+
+  const [currentPage, setCurrentPage] = useState(getCurrentPage);
+
+  useEffect(() => {
+    setCurrentPage(getCurrentPage());
+  }, [getCurrentPage]);
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  const setPage = useCallback(
+    (page: number) => {
+      const qs = createQueryString('page', String(page));
+      router.replace(`${pathname}?${qs}`);
+      setCurrentPage(page);
+    },
+    [createQueryString, pathname, router]
+  );
+
   const [paginationData, setPaginationData] = useState<PaginationState | null>(
     null
   );
 
-  const totalPages = paginationData
-    ? Math.ceil(paginationData.count / LIMIT)
-    : 0;
-
+  const totalPages = useMemo(
+    () => (paginationData ? Math.ceil(paginationData.count / LIMIT) : 0),
+    [paginationData]
+  );
   const hasNext = Boolean(paginationData?.next);
   const hasPrev = Boolean(paginationData?.previous);
-
-  const getInitialPage = () => {
-    const pageParam = searchParams.get('page');
-    if (pageParam && !isNaN(Number(pageParam))) {
-      return String(Number(pageParam));
-    }
-    return String(sessionStorage.getItem('pokemonListPage') || DEFAULT_PAGE);
-  };
-
-  const [currentPage, setCurrentPage] = useState(getInitialPage());
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    if (!params.get('page')) {
-      const savedPage =
-        sessionStorage.getItem('pokemonListPage') || DEFAULT_PAGE;
-      params.set('page', String(savedPage));
-      setSearchParams(params, { replace: true });
-    }
-  }, [location.search, setSearchParams]);
-
-  const setPage = (page: number) => {
-    const params = new URLSearchParams(searchParams);
-    params.set('page', String(page));
-    setSearchParams(params, { replace: true });
-    setCurrentPage(String(page));
-    sessionStorage.setItem('pokemonListPage', String(page));
-  };
-
-  const updatePaginationData = (data: PaginationState) => {
-    setPaginationData(data);
-  };
 
   return {
     currentPage,
@@ -62,6 +63,7 @@ export const usePagination = () => {
     hasNext,
     hasPrev,
     setPage,
-    setPaginationData: updatePaginationData,
+    paginationData,
+    setPaginationData,
   };
-};
+}

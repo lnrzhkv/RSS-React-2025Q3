@@ -6,8 +6,8 @@ import type {
   PokemonDetails,
   PokemonSpecies,
   PokemonsTypesReponseData,
-} from './types';
-import { API_BASE } from './constants';
+} from '@/shared/api/types.ts';
+import { API_BASE } from '@/shared/api/constants.ts';
 
 const normalizeCharacter = (data: Character): CharacterWithImage => ({
   id: data.id,
@@ -64,17 +64,11 @@ export const pokemonApi = createApi({
           throw new Error('Failed to normalize pokemon data');
         }
       },
-      providesTags: (result, _, page) =>
-        result
-          ? [
-              ...result.results.map(({ id }) => ({
-                type: 'PokemonList' as const,
-                id,
-              })),
-              { type: 'PokemonList', id: `PAGE_${page}` },
-            ]
-          : [{ type: 'PokemonList', id: `PAGE_${page}` }],
+      providesTags: (_result, _, page) => [
+        { type: 'PokemonList', id: `PAGE_${page}` },
+      ],
     }),
+
     searchPokemon: builder.query<CharacterWithImage[], string>({
       query: (name) => `pokemon/${name.toLowerCase()}`,
       transformResponse: (response: Character) => [
@@ -83,6 +77,7 @@ export const pokemonApi = createApi({
       providesTags: (_, __, name) =>
         name ? [{ type: 'Search', id: name }] : ['Search'],
     }),
+
     getPokemonDetails: builder.query<PokemonDetails, string | number>({
       query: (id) => `pokemon-species/${id}`,
       transformResponse: normalizeDetails,
@@ -93,9 +88,7 @@ export const pokemonApi = createApi({
 
 export const {
   useGetPokemonsQuery,
-  useLazyGetPokemonsQuery,
   useSearchPokemonQuery,
-  useLazySearchPokemonQuery,
   useGetPokemonDetailsQuery,
   util: { invalidateTags },
 } = pokemonApi;

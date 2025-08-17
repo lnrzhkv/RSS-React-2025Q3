@@ -1,88 +1,66 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen } from '@testing-library/react';
 import ErrorBoundary from './ErrorBoundary';
-import ErrorButton from '../ErrorButton/ErrorButton';
 
-describe('ErrorBoundary Component', () => {
-  let originalError: typeof console.error;
+const tMock = (key: string) => {
+  const dict: Record<string, string> = {
+    'ErrorBoundary.title': 'Error',
+    'ErrorBoundary.unknownError': 'Unknown error',
+    'ErrorBoundary.description': 'Something went wrong',
+  };
+  return dict[key] ?? key;
+};
 
-  beforeAll(() => {
-    originalError = console.error;
+describe('ErrorBoundary', () => {
+  const originalError = console.error;
+
+  beforeEach(() => {
     console.error = jest.fn();
   });
 
-  afterAll(() => {
+  afterEach(() => {
     console.error = originalError;
+    jest.clearAllMocks();
   });
 
-  test('renders children when no error occurs', () => {
+  it('renders children when there is no error', () => {
     render(
-      <ErrorBoundary>
-        <div data-testid="safe-child">Safe content</div>
+      <ErrorBoundary t={tMock}>
+        <div data-testid="child">Content</div>
       </ErrorBoundary>
     );
 
-    expect(screen.getByTestId('safe-child')).toBeInTheDocument();
+    expect(screen.getByTestId('child')).toHaveTextContent('Content');
     expect(
       screen.queryByTestId('error-boundary-fallback')
     ).not.toBeInTheDocument();
   });
 
-  test('displays fallback UI when error occurs', () => {
-    render(
-      <ErrorBoundary>
-        <ErrorButton />
-      </ErrorBoundary>
-    );
-
-    const button = screen.getByTestId('error-button');
-    fireEvent.click(button);
-
-    expect(screen.getByTestId('error-boundary-fallback')).toBeInTheDocument();
-    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
-    expect(
-      screen.getByText('Test error triggered by button click')
-    ).toBeInTheDocument();
-  });
-
-  test('logs error to console', () => {
-    const mockError = jest.fn();
-    console.error = mockError;
-
-    render(
-      <ErrorBoundary>
-        <ErrorButton />
-      </ErrorBoundary>
-    );
-
-    const button = screen.getByTestId('error-button');
-    fireEvent.click(button);
-
-    expect(mockError).toHaveBeenCalled();
-
-    const errorLogged = mockError.mock.calls.some((call: unknown[]) => {
-      return call.some((arg: unknown) => {
-        if (typeof arg === 'string') {
-          return arg.includes('Test error triggered by button click');
-        }
-        if (arg instanceof Error) {
-          return arg.message.includes('Test error triggered by button click');
-        }
-        return false;
-      });
-    });
-
-    expect(errorLogged).toBeTruthy();
-  });
-
-  test('shows unknown error message when error has no message', () => {
-    const BrokenComponent = () => {
-      throw new Error();
+  it('displays fallback UI with error message when an error occurs', () => {
+    const ProblemChild = () => {
+      throw new Error('Test error');
     };
 
     render(
-      <ErrorBoundary>
-        <BrokenComponent />
+      <ErrorBoundary t={tMock}>
+        <ProblemChild />
+      </ErrorBoundary>
+    );
+
+    expect(screen.getByTestId('error-boundary-fallback')).toBeInTheDocument();
+    expect(screen.getByText('Error')).toBeInTheDocument();
+    expect(screen.getByText('Test error')).toBeInTheDocument();
+    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+    expect(console.error).toHaveBeenCalled();
+  });
+
+  it('shows unknown error text if no error object is present', () => {
+    const ProblemChild = () => {
+      throw {} as Error;
+    };
+
+    render(
+      <ErrorBoundary t={tMock}>
+        <ProblemChild />
       </ErrorBoundary>
     );
 

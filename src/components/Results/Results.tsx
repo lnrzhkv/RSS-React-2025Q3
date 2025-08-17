@@ -1,68 +1,50 @@
-import React, { useCallback, type Dispatch, type SetStateAction } from 'react';
-import Loader from './Loader';
-import ResultsItem from './ResultsItem';
-import styles from './Results.module.css';
-import { useSearchParams } from 'react-router-dom';
-import type { CharacterWithImage } from '../../shared/api/types';
+'use client';
+import React from 'react';
+import type { CharacterWithImage } from '@/shared/api/types.ts';
+import { usePathname, useRouter } from '@/shared/lib/navigation.ts';
+import { useSearchParams } from 'next/navigation.js';
+
+import ResultsView from './ResultsView.tsx';
 
 interface ResultsProps {
   characters: CharacterWithImage[];
-  error: string | null;
-  loading: boolean;
-  setIsDetailsOpen: Dispatch<SetStateAction<boolean>>;
+  setIsDetailsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isError?: boolean;
+  isLoading?: boolean;
 }
 
 const Results: React.FC<ResultsProps> = ({
   characters,
-  error,
-  loading,
+  isError,
+  isLoading,
   setIsDetailsOpen,
 }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const handleClickItem = useCallback(
-    (id: string) => {
-      const newParams = new URLSearchParams(searchParams);
+  const handleDelegatedClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement | null;
+    const item = target?.closest('[data-character-id]') as HTMLElement | null;
+    if (!item) return;
+    const id = item.getAttribute('data-character-id');
+    if (!id) return;
 
-      newParams.set('characterId', id);
-      setSearchParams(newParams);
-
-      setIsDetailsOpen(true);
-    },
-    [searchParams, setSearchParams]
-  );
-
-  if (loading && characters.length === 0) {
-    return <Loader />;
-  }
-
-  if (error) {
-    return (
-      <div className={styles.errorContainer}>
-        <p className={styles.errorTitle}>Error</p>
-        <p>{error}</p>
-      </div>
-    );
-  }
-
-  if (characters.length === 0) {
-    return <div className={styles.noResults}>No Pokémon found</div>;
-  }
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('characterId', id);
+    router.replace(`${pathname}?${params.toString()}`);
+    setIsDetailsOpen(true);
+  };
 
   return (
-    <div className={styles.resultsContainer} data-testid="results-container">
-      {characters.map((character) => (
-        <div
-          key={character.id}
-          onClick={() => handleClickItem(String(character.id))}
-        >
-          <ResultsItem character={character} />
-        </div>
-      ))}
+    <div onClick={handleDelegatedClick}>
+      <ResultsView
+        characters={characters}
+        isLoading={isLoading}
+        isError={isError}
+      />
     </div>
   );
 };
 
 export default Results;
-
-Results.displayName = 'Results';

@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+  "dev": "next dev",
+  "build": "next build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
+  "preview": "next start",
     "prepare": "husky",
     "postinstall": "husky",
     "format:fix": "prettier --write .",
-    "start": "vite --port 3000",
+  "start": "next start",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "coverage": "jest --coverage --collectCoverageFrom='src/**/*.{ts,tsx}'"
@@ -20,11 +20,11 @@
     "@fortawesome/free-solid-svg-icons": "^7.0.0",
     "@fortawesome/react-fontawesome": "^0.2.3",
     "@reduxjs/toolkit": "^2.8.2",
-    "axios": "^1.10.0",
+    "next": "^15.4.6",
+    "next-intl": "^4.3.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-redux": "^9.2.0",
-    "react-router-dom": "^7.7.0"
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.28.0",
@@ -61,7 +61,6 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "util": "^0.12.5",
-    "vite": "^7.0.4",
     "whatwg-fetch": "^3.6.20"
   }
 }

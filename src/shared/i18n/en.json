@@ -1,0 +1,65 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "about": "About",
+    "language": "Language",
+    "switchToEn": "EN",
+    "switchToRu": "RU"
+  },
+  "NotFound": {
+    "title": "404 - Page Not Found",
+    "description": "The page you are looking for does not exist.",
+    "homeLink": "Return to homepage"
+  },
+  "PokemonList": {
+    "title": "Pokémon Search",
+    "results": "Search Results",
+    "refresh": "Refresh Data"
+  },
+  "AboutPage": {
+    "title": "About Pokémon Search",
+    "developedBy": "This application was developed by",
+    "coursePart": "As part of the RS School React 2025 course",
+    "react": "RS School React",
+    "backButton": "Back to main page"
+  },
+  "ErrorBoundary": {
+    "title": "Something went wrong",
+    "description": "Please refresh the page or try again later.",
+    "unknownError": "Unknown error occurred"
+  },
+  "SelectedItems": {
+    "unselectAll": "Unselect all",
+    "downloadCSV": "Download",
+    "itemSelected": "{count} item is selected",
+    "itemsSelected": "{count} items are selected"
+  },
+  "ErrorButton": {
+    "title": "Trigger Test Error"
+  },
+  "ResultsItem": {
+    "description": "Height: {height}, Weight: {weight}",
+    "selectAriaLabel": "Select {name}",
+    "heightWeight": "Height: {height}, Weight: {weight}",
+    "types": "Types"
+  },
+  "Search": {
+    "searchPlaceholder": "Search Pokémon...",
+    "searchButton": "Search"
+  },
+  "PokemonDetails": {
+  "baseHappyness": "Base happiness",
+  "color": "Color",
+  "generation": "Generation",
+  "growthRate": "Growth rate",
+  "shape": "Shape",
+  "formSwitchable": "Form switchable",
+  "baby": "Baby",
+  "legendary": "Legendary",
+  "mythical": "Mythical"
+},
+"Results": {
+  "noPokemonFound": "No Pokémon found",
+  "heightWeight": "Height: {height}, Weight: {weight}"
+}
+}

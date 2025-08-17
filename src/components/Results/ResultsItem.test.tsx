@@ -1,93 +1,120 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import ResultsItem from './ResultsItem';
-import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
-import selectedItemsReducer from '../../shared/store/selectedItemsSlice';
-import type { CharacterWithImage } from '../../shared/api/types';
+import { useAppSelector, useAppDispatch } from '../../shared/store/hooks';
+import { addItem, removeItem } from '../../shared/store/selectedItemsSlice';
+import { useTranslations } from 'next-intl';
 
-describe('ResultsItem (with real Redux store)', () => {
-  const character: CharacterWithImage = {
-    id: 1,
-    name: 'Pikachu',
-    height: 4,
-    weight: 6,
-    image: 'https://img.url/pikachu.png',
-    types: [
-      {
-        slot: 1,
-        type: {
-          name: 'electric',
-          url: 'https://pokeapi.co/type/electric',
-        },
-      },
-    ],
+jest.mock('next-intl', () => ({
+  useTranslations: jest.fn(),
+}));
+
+jest.mock('@/shared/store/hooks', () => ({
+  useAppSelector: jest.fn(),
+  useAppDispatch: jest.fn(),
+}));
+
+jest.mock('@/shared/store/selectedItemsSlice', () => ({
+  addItem: jest.fn((item) => ({
+    type: 'selectedItems/addItem',
+    payload: item,
+  })),
+  removeItem: jest.fn((id) => ({
+    type: 'selectedItems/removeItem',
+    payload: id,
+  })),
+}));
+
+jest.mock('./ResultsItemView', () => ({
+  __esModule: true,
+  default: ({ character, description, typesText }) => (
+    <div
+      data-testid="results-item-view"
+      data-name={character.name}
+      data-description={description}
+      data-types-text={typesText}
+    />
+  ),
+}));
+
+describe('ResultsItem', () => {
+  const mockUseSelector = useAppSelector as unknown as jest.Mock;
+  const mockUseDispatch = useAppDispatch as unknown as jest.Mock;
+  const tMock = jest.fn((key: string, opts) => {
+    if (key === 'description') return `desc:${opts.height}:${opts.weight}`;
+    if (key === 'heightWeight') return `hw:${opts.height}:${opts.weight}`;
+    if (key === 'selectAriaLabel') return `select:${opts.name}`;
+    return key;
+  });
+  const dispatchMock = jest.fn();
+  const character = {
+    id: 7,
+    name: 'Squirtle',
+    height: 5,
+    weight: 90,
+    types: [{ type: { name: 'water' } }],
   };
 
-  function renderWithStore() {
-    const store = configureStore({
-      reducer: { selectedItems: selectedItemsReducer },
-    });
-    render(
-      <Provider store={store}>
-        <ResultsItem character={character} />
-      </Provider>
-    );
-    return store;
-  }
-
-  it('initially renders unchecked, then adds item to store on check', () => {
-    const store = renderWithStore();
-
-    const checkbox = screen.getByRole('checkbox', {
-      name: /select-pikachu/i,
-    });
-    expect(checkbox).not.toBeChecked();
-
-    fireEvent.click(checkbox);
-
-    const itemsState = store.getState().selectedItems;
-    expect(itemsState).toHaveLength(1);
-    expect(itemsState[0]).toEqual({
-      id: '1',
-      name: 'Pikachu',
-      description: 'Height: 4, Weight: 6',
-      detailsUrl: '/details/1',
-    });
-
-    expect(checkbox).toBeChecked();
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (useTranslations as jest.Mock).mockReturnValue(tMock);
+    mockUseSelector.mockReturnValue([]);
+    mockUseDispatch.mockReturnValue(dispatchMock);
   });
 
-  it('removes item from store on uncheck', () => {
-    const store = renderWithStore();
+  it('renders correctly when not selected', () => {
+    render(<ResultsItem character={character} />);
 
     const checkbox = screen.getByRole('checkbox', {
-      name: /select-pikachu/i,
+      name: /select:Squirtle/,
     });
-
-    fireEvent.click(checkbox);
-    expect(store.getState().selectedItems).toHaveLength(1);
-    expect(checkbox).toBeChecked();
-
-    fireEvent.click(checkbox);
-    expect(store.getState().selectedItems).toHaveLength(0);
     expect(checkbox).not.toBeChecked();
+
+    const view = screen.getByTestId('results-item-view');
+    expect(view).toHaveAttribute('data-description', 'hw:5:90');
+    expect(view).toHaveAttribute('data-types-text', 'water');
   });
 
-  it('renders all character info correctly', () => {
-    renderWithStore();
-
-    expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent(
-      'Pikachu'
-    );
-    expect(screen.getByText('Height: 4, Weight: 6')).toBeInTheDocument();
-    expect(screen.getByText('Types: electric')).toBeInTheDocument();
-
-    const img = screen.getByRole('img', { name: 'Pikachu' });
-    expect(img).toHaveAttribute('src', 'https://img.url/pikachu.png');
+  it('dispatches addItem when checkbox is checked', () => {
+    render(<ResultsItem character={character} />);
 
     const checkbox = screen.getByRole('checkbox', {
-      name: /select-pikachu/i,
+      name: /select:Squirtle/,
     });
-    expect(checkbox).not.toBeChecked();
+
+    fireEvent.click(checkbox);
+
+    expect(addItem).toHaveBeenCalledWith({
+      id: '7',
+      name: 'Squirtle',
+      description: 'desc:5:90',
+      detailsUrl: '/details/7',
+    });
+
+    expect(dispatchMock).toHaveBeenCalledWith({
+      type: 'selectedItems/addItem',
+      payload: {
+        id: '7',
+        name: 'Squirtle',
+        description: 'desc:5:90',
+        detailsUrl: '/details/7',
+      },
+    });
+  });
+
+  it('dispatches removeItem when checkbox is unchecked', () => {
+    mockUseSelector.mockReturnValue([{ id: '7' }]);
+    render(<ResultsItem character={character} />);
+
+    const checkbox = screen.getByRole('checkbox', {
+      name: /select:Squirtle/,
+    });
+
+    fireEvent.click(checkbox);
+
+    expect(removeItem).toHaveBeenCalledWith('7');
+    expect(dispatchMock).toHaveBeenCalledWith({
+      type: 'selectedItems/removeItem',
+      payload: '7',
+    });
   });
 });

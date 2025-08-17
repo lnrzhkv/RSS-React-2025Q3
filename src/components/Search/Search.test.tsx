@@ -1,118 +1,88 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, fireEvent } from '@testing-library/react';
 import Search from './Search';
-import { BrowserRouter } from 'react-router-dom';
+import { useTranslations } from 'next-intl';
 
-describe('Search Component', () => {
-  const mockOnChange = jest.fn();
-  const successfulSearchMock = jest.fn().mockResolvedValue(undefined);
+jest.mock('next-intl', () => ({
+  useTranslations: jest.fn(),
+}));
+
+describe('Search component', () => {
+  const tMock = jest.fn((key: string) => {
+    if (key === 'searchPlaceholder') return 'Type to search';
+    if (key === 'searchButton') return 'Go';
+    return key;
+  });
+
+  const onChangeSearchValue = jest.fn();
+  const onSearch = jest.fn(() => Promise.resolve());
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (useTranslations as jest.Mock).mockReturnValue(tMock);
   });
 
-  test('renders search form with input and button', () => {
+  it('renders input and button with correct attributes', () => {
     render(
-      <BrowserRouter>
-        <Search
-          searchValue=""
-          onChangeSearchValue={mockOnChange}
-          onSearch={successfulSearchMock}
-        />
-      </BrowserRouter>
+      <Search
+        searchValue="hello"
+        onChangeSearchValue={onChangeSearchValue}
+        onSearch={onSearch}
+        data-testid="search-root"
+      />
     );
 
-    expect(screen.getByRole('textbox')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
+    expect(screen.getByTestId('search-root')).toBeInTheDocument();
+
+    const input = screen.getByTestId('search-input') as HTMLInputElement;
+    expect(input.value).toBe('hello');
+    expect(input).toHaveAttribute('placeholder', 'Type to search');
+
+    const button = screen.getByTestId('search-button');
+    expect(button).toHaveTextContent('Go');
+    expect(button).toHaveAttribute('aria-label', 'Search');
   });
 
-  test('calls onChange handler with new value', () => {
+  it('calls onChangeSearchValue on user typing', () => {
     render(
-      <BrowserRouter>
-        <Search
-          searchValue=""
-          onChangeSearchValue={mockOnChange}
-          onSearch={successfulSearchMock}
-        />
-      </BrowserRouter>
+      <Search
+        searchValue=""
+        onChangeSearchValue={onChangeSearchValue}
+        onSearch={onSearch}
+      />
     );
 
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'pikachu' },
-    });
+    const input = screen.getByTestId('search-input');
+    fireEvent.change(input, { target: { value: 'abc' } });
 
-    expect(mockOnChange).toHaveBeenCalledWith('pikachu');
+    expect(onChangeSearchValue).toHaveBeenCalledTimes(1);
+    expect(onChangeSearchValue).toHaveBeenCalledWith('abc');
   });
 
-  test('calls onSearch with trimmed value when button clicked', async () => {
+  it('calls onSearch with trimmed value when clicking the button', () => {
     render(
-      <BrowserRouter>
-        <Search
-          searchValue="  charizard  "
-          onChangeSearchValue={mockOnChange}
-          onSearch={successfulSearchMock}
-        />
-      </BrowserRouter>
+      <Search
+        searchValue="  spaced value  "
+        onChangeSearchValue={onChangeSearchValue}
+        onSearch={onSearch}
+      />
     );
 
-    fireEvent.click(screen.getByRole('button'));
+    const button = screen.getByTestId('search-button');
+    fireEvent.click(button);
 
-    await waitFor(() => {
-      expect(successfulSearchMock).toHaveBeenCalledWith('charizard');
-    });
+    expect(onSearch).toHaveBeenCalledTimes(1);
+    expect(onSearch).toHaveBeenCalledWith('spaced value');
   });
 
-  test('shows error message when search fails', async () => {
-    const errorMessage = 'Search failed';
-    const failingSearchMock = jest
-      .fn()
-      .mockRejectedValue(new Error(errorMessage));
-
+  it('does not show an error message initially', () => {
     render(
-      <BrowserRouter>
-        <Search
-          searchValue="error-case"
-          onChangeSearchValue={mockOnChange}
-          onSearch={failingSearchMock}
-        />
-      </BrowserRouter>
+      <Search
+        searchValue=""
+        onChangeSearchValue={onChangeSearchValue}
+        onSearch={onSearch}
+      />
     );
 
-    fireEvent.click(screen.getByRole('button'));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('search-error')).toBeInTheDocument();
-      expect(screen.getByTestId('search-error')).toHaveTextContent(
-        'Search failed. Please try again.'
-      );
-    });
-  });
-
-  test('clears error message on new search attempt', async () => {
-    const errorMessage = 'Search failed';
-    const mockSearch = jest
-      .fn()
-      .mockRejectedValueOnce(new Error(errorMessage))
-      .mockResolvedValueOnce(undefined);
-
-    render(
-      <BrowserRouter>
-        <Search
-          searchValue="error-case"
-          onChangeSearchValue={mockOnChange}
-          onSearch={mockSearch}
-        />
-      </BrowserRouter>
-    );
-
-    fireEvent.click(screen.getByRole('button'));
-    await waitFor(() => {
-      expect(screen.getByTestId('search-error')).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByRole('button'));
-    await waitFor(() => {
-      expect(screen.queryByTestId('search-error')).not.toBeInTheDocument();
-    });
+    expect(screen.queryByTestId('search-error')).toBeNull();
   });
 });

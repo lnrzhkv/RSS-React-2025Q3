@@ -1,0 +1,65 @@
+{
+  "Navigation": {
+    "home": "Главная",
+    "about": "О нас",
+    "language": "Язык",
+    "switchToEn": "Англ",
+    "switchToRu": "Рус"
+  },
+  "NotFound": {
+    "title": "404 - Страница не найдена",
+    "description": "Запрашиваемая страница не существует.",
+    "homeLink": "Вернуться на главную"
+  },
+  "PokemonList": {
+    "title": "Поиск Покемонов",
+    "results": "Результаты поиска",
+    "refresh": "Обновить данные"
+  },
+  "AboutPage": {
+    "title": "О Поиске Покемонов",
+    "developedBy": "Это приложение разработано",
+    "coursePart": "В рамках курса RS School React 2025",
+    "react": "RS School React",
+    "backButton": "Вернуться на главную"
+  },
+  "ErrorBoundary": {
+    "title": "Что-то пошло не так",
+    "description": " Пожалуйста, обновите страницу или попробуйте позже.",
+    "unknownError": "Произошла неизвестная ошибка"
+  },
+  "SelectedItems": {
+    "unselectAll": "Сбросить все",
+    "downloadCSV": "Скачать",
+    "itemSelected": "{count} элемент выбран",
+    "itemsSelected": "{count} элементов выбрано"
+  },
+  "ErrorButton": {
+    "title": "Вызвать тестовую ошибку"
+  },
+  "ResultsItem": {
+    "description": "Рост: {height}, Вес: {weight}",
+    "selectAriaLabel": "Выбрать {name}",
+    "heightWeight": "Рост: {height}, Вес: {weight}",
+    "types": "Типы"
+  },
+  "Search": {
+    "searchPlaceholder": "Поиск Покемонов...",
+    "searchButton": "Поиск"
+  },
+  "PokemonDetails": {
+  "baseHappyness": "Базовая радость",
+  "color": "Цвет",
+  "generation": "Поколение",
+  "growthRate": "Скорость роста",
+  "shape": "Форма",
+  "formSwitchable": "Смена формы",
+  "baby": "Детский",
+  "legendary": "Легендарный",
+  "mythical": "Мифический"
+},
+  "Results": {
+    "noPokemonFound": "Покемоны не найдены",
+    "heightWeight": "Рост: {height}, Вес: {weight}"
+  }
+}

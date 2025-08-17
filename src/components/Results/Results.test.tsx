@@ -1,118 +1,115 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Results from './Results';
-import { useSearchParams } from 'react-router-dom';
-import type { CharacterWithImage } from '../../shared/api/types';
+import { useRouter, usePathname } from '../../shared/lib/navigation.ts';
+import { useSearchParams } from 'next/navigation.js';
 
-jest.mock('./Loader', () => {
-  const MockLoader: React.FC = () => <div data-testid="loader-mock" />;
-  MockLoader.displayName = 'MockLoader';
-  return MockLoader;
-});
+jest.mock('@/shared/lib/navigation.ts', () => ({
+  useRouter: jest.fn(),
+  usePathname: jest.fn(),
+}));
 
-jest.mock('./ResultsItem', () => {
-  const MockResultsItem: React.FC<{ character: CharacterWithImage }> = ({
-    character,
-  }) => <div data-testid={`result-item-${character.id}`}>{character.name}</div>;
-  MockResultsItem.displayName = 'MockResultsItem';
-  return MockResultsItem;
-});
-
-jest.mock('react-router-dom', () => ({
+jest.mock('next/navigation.js', () => ({
   useSearchParams: jest.fn(),
 }));
 
-describe('Results', () => {
-  const setSearchParams = jest.fn();
-  const fakeSearchParams = new URLSearchParams('foo=bar');
+jest.mock('./ResultsView.tsx', () => ({
+  __esModule: true,
+  default: ({ characters, isLoading, isError }) => (
+    <div data-testid="results-view">
+      {characters.map((c) => (
+        <div data-character-id={c.id} key={c.id}>
+          {c.name}
+        </div>
+      ))}
+      {isLoading && <span data-testid="loading">Loading…</span>}
+      {isError && <span data-testid="error">Error!</span>}
+    </div>
+  ),
+}));
+
+describe('Results component', () => {
+  const mockReplace = jest.fn();
+  const mockPathname = '/mypage';
+  const mockParams = new URLSearchParams('foo=bar');
+  const setIsDetailsOpen = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useSearchParams as jest.Mock).mockReturnValue([
-      fakeSearchParams,
-      setSearchParams,
-    ]);
+    (useRouter as jest.Mock).mockReturnValue({ replace: mockReplace });
+    (usePathname as jest.Mock).mockReturnValue(mockPathname);
+    (useSearchParams as jest.Mock).mockReturnValue(mockParams);
   });
 
-  it('renders Loader when loading=true and characters empty', () => {
-    render(
-      <Results
-        characters={[]}
-        loading={true}
-        error={null}
-        setIsDetailsOpen={jest.fn()}
-      />
-    );
-    expect(screen.getByTestId('loader-mock')).toBeInTheDocument();
-  });
-
-  it('renders error message when error is set', () => {
-    render(
-      <Results
-        characters={[]}
-        loading={false}
-        error="Boom!"
-        setIsDetailsOpen={jest.fn()}
-      />
-    );
-    expect(screen.getByText('Error')).toBeInTheDocument();
-    expect(screen.getByText('Boom!')).toBeInTheDocument();
-  });
-
-  it('renders "No Pokémon found" when no characters, no loading/error', () => {
-    render(
-      <Results
-        characters={[]}
-        loading={false}
-        error={null}
-        setIsDetailsOpen={jest.fn()}
-      />
-    );
-    expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
-  });
-
-  it('renders list of characters and handles clicks', () => {
-    const characters: CharacterWithImage[] = [
-      {
-        id: 1,
-        name: 'Pikachu',
-        height: 4,
-        weight: 6,
-        image: 'img1',
-        types: [],
-      },
-      {
-        id: 2,
-        name: 'Bulbasaur',
-        height: 7,
-        weight: 9,
-        image: 'img2',
-        types: [],
-      },
+  it('renders characters, loading and error indicators correctly', () => {
+    const chars = [
+      { id: '1', name: 'A' },
+      { id: '2', name: 'B' },
     ];
-    const setIsDetailsOpen = jest.fn();
+    const { rerender } = render(
+      <Results
+        characters={chars}
+        setIsDetailsOpen={setIsDetailsOpen}
+        isLoading={false}
+        isError={false}
+      />
+    );
 
+    expect(screen.getByText('A')).toBeInTheDocument();
+    expect(screen.getByText('B')).toBeInTheDocument();
+    expect(screen.queryByTestId('loading')).toBeNull();
+    expect(screen.queryByTestId('error')).toBeNull();
+
+    rerender(
+      <Results
+        characters={[]}
+        setIsDetailsOpen={setIsDetailsOpen}
+        isLoading={true}
+        isError={false}
+      />
+    );
+    expect(screen.getByTestId('loading')).toHaveTextContent('Loading…');
+    expect(screen.queryByTestId('error')).toBeNull();
+
+    rerender(
+      <Results
+        characters={[]}
+        setIsDetailsOpen={setIsDetailsOpen}
+        isLoading={false}
+        isError={true}
+      />
+    );
+    expect(screen.getByTestId('error')).toHaveTextContent('Error!');
+    expect(screen.queryByTestId('loading')).toBeNull();
+  });
+
+  it('does nothing when clicking outside any character item', () => {
     render(
       <Results
-        characters={characters}
-        loading={false}
-        error={null}
+        characters={[{ id: '42', name: 'Clark' }]}
         setIsDetailsOpen={setIsDetailsOpen}
       />
     );
 
-    expect(screen.getByTestId('results-container')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('results-view'));
+    expect(mockReplace).not.toHaveBeenCalled();
+    expect(setIsDetailsOpen).not.toHaveBeenCalled();
+  });
 
-    characters.forEach((char, idx) => {
-      const item = screen.getByTestId(`result-item-${char.id}`);
-      expect(item).toHaveTextContent(char.name);
+  it('navigates and opens details when a character item is clicked', () => {
+    render(
+      <Results
+        characters={[{ id: '123', name: 'Bulba' }]}
+        setIsDetailsOpen={setIsDetailsOpen}
+      />
+    );
 
-      fireEvent.click(item);
+    fireEvent.click(screen.getByText('Bulba'));
 
-      const callArg = setSearchParams.mock.calls[idx][0] as URLSearchParams;
-      expect(callArg.get('characterId')).toBe(String(char.id));
+    const expectedParams = new URLSearchParams('foo=bar');
+    expectedParams.set('characterId', '123');
+    const expectedUrl = `${mockPathname}?${expectedParams.toString()}`;
 
-      expect(setIsDetailsOpen).toHaveBeenCalledWith(true);
-    });
+    expect(mockReplace).toHaveBeenCalledWith(expectedUrl);
+    expect(setIsDetailsOpen).toHaveBeenCalledWith(true);
   });
 });

@@ -13,3 +13,19 @@ declare module '*.jpg';
 declare module '*.jpeg';
 declare module '*.gif';
 declare module '*.svg';
+
+declare module 'next/image' {
+  import * as React from 'react';
+
+  type ImageProps = React.ComponentProps<'img'> & {
+    width?: number | string;
+    height?: number | string;
+    priority?: boolean;
+    placeholder?: 'blur' | 'empty';
+    blurDataURL?: string;
+    unoptimized?: boolean;
+  };
+
+  const Image: React.FC<ImageProps>;
+  export default Image;
+}
