@@ -1,9 +1,9 @@
 .errorBoundary {
   padding: 30px;
-  background-color: #fdf2f2;
-  border: 1px solid #f8d7da;
-  border-radius: 8px;
-  color: #d1603d;
+  background-color: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: var(--border-radius);
+  color: var(--primary-color);
   text-align: center;
   max-width: 700px;
   margin: 0 auto;
@@ -11,7 +11,7 @@
 }
 
 .title {
-  color: #d1603d;
+  color: var(--primary-color);
   font-size: 1.5rem;
 }
 

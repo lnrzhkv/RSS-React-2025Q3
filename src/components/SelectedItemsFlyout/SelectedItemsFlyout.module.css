@@ -1,0 +1,54 @@
+.flyoutWrapper {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  width: 100vw;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  background: rgba(44, 44, 44, 0.4);
+  transition: background 0.3s;
+}
+
+.flyoutBox {
+  background: var(--box-color-bg);
+  color: var(--text-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.count {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #d1603d;
+}
+
+.button {
+  padding: 10px 20px;
+  background-color: var(--pagination-bg);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  margin-right: 8px;
+  font-family: "Gruppo", sans-serif;
+  font-weight: 600;
+}
+
+.button:last-child {
+  margin-right: 0;
+}
+
+.button:hover {
+  background-color: var(--pagination-hover);
+}

@@ -3,6 +3,7 @@ import App from './components/App/App';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import React from 'react';
+import './styles/themes.css';
 
 const rootElement = document.getElementById('root');
 

@@ -7,6 +7,7 @@ import Box from '../../components/Box/Box';
 import { useGlobalContext } from '../../context/hooks/useGlobalContext';
 import PokemonDetails from '../PokemonDetails/PokemonDetails';
 import Pagination from '../Pagination/Pagination';
+import SelectedItemsFlyout from '../SelectedItemsFlyout/SelectedItemsFlyout';
 
 const PokemonList: React.FC = () => {
   const {
@@ -24,6 +25,11 @@ const PokemonList: React.FC = () => {
       fetchPokemons(+pagination.currentPage);
     }
   }, []);
+
+  const isShowPagination =
+    characters.length >= 10 ||
+    (pagination.totalPages !== undefined &&
+      +pagination.currentPage === +pagination.totalPages);
 
   return (
     <div className={styles.content} data-testid="pokemonlist-content">
@@ -46,7 +52,7 @@ const PokemonList: React.FC = () => {
             <h2 data-testid="app-results-title" className={styles.sectionTitle}>
               Search Results
             </h2>
-            {characters.length >= 10 && (
+            {isShowPagination && (
               <Pagination
                 data-testid="pokemonlist-pagination-top"
                 currentPage={+pagination.currentPage}
@@ -62,7 +68,7 @@ const PokemonList: React.FC = () => {
 
             <Results />
 
-            {characters.length >= 10 && (
+            {isShowPagination && (
               <Pagination
                 data-testid="pokemonlist-pagination-bottom"
                 currentPage={+pagination.currentPage}
@@ -83,6 +89,7 @@ const PokemonList: React.FC = () => {
       </Box>
 
       <PokemonDetails data-testid="pokemonlist-details" />
+      <SelectedItemsFlyout />
     </div>
   );
 };

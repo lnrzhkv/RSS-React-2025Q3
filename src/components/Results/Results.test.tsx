@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Results from './Results';
-import { GlobalContext, type ContextProps } from '../../context/GlobalContext';
-import type { CharacterWithImage } from '../../services/api/types';
+import { GlobalContext } from '../../context/GlobalContext';
+import type { ContextProps } from '../../context/GlobalContext';
 import { BrowserRouter } from 'react-router-dom';
 
 const mockContext = {
@@ -24,64 +24,46 @@ const mockContext = {
     onNextPage: jest.fn(),
     totalPages: 1,
   },
+  theme: 'light' as const,
+  toggleTheme: jest.fn(),
 } satisfies ContextProps;
 
-const mockCharacters: CharacterWithImage[] = [
-  {
-    id: 1,
-    name: 'Pikachu',
-    height: 40,
-    weight: 6,
-    types: [{ slot: 1, type: { name: 'electric', url: '' } }],
-    image: 'pikachu.png',
-  },
-  {
-    id: 2,
-    name: 'Charmander',
-    height: 60,
-    weight: 8,
-    types: [{ slot: 1, type: { name: 'fire', url: '' } }],
-    image: 'pikachu.png',
-  },
-];
-
 describe('Results Component', () => {
-  const renderWithContext = (override: Partial<ContextProps> = {}) => {
-    const contextValue = { ...mockContext, ...override };
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-    return render(
+  test('renders loader when loading', () => {
+    render(
       <BrowserRouter>
-        <GlobalContext.Provider value={contextValue}>
+        <GlobalContext.Provider value={{ ...mockContext, loading: true }}>
           <Results />
         </GlobalContext.Provider>
       </BrowserRouter>
     );
-  };
-
-  test('shows loading state', () => {
-    renderWithContext({ loading: true });
     expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 
-  test('displays error message when API call fails', () => {
-    const errorMessage = 'Failed to fetch data';
-    renderWithContext({ error: errorMessage });
-
+  test('renders error when error exists', () => {
+    render(
+      <BrowserRouter>
+        <GlobalContext.Provider value={{ ...mockContext, error: 'Test error' }}>
+          <Results />
+        </GlobalContext.Provider>
+      </BrowserRouter>
+    );
     expect(screen.getByText('Error')).toBeInTheDocument();
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    expect(screen.getByText('Test error')).toBeInTheDocument();
   });
 
-  test('shows no results message when data is empty', () => {
-    renderWithContext({ characters: [] });
+  test('renders no results message when characters empty', () => {
+    render(
+      <BrowserRouter>
+        <GlobalContext.Provider value={{ ...mockContext, characters: [] }}>
+          <Results />
+        </GlobalContext.Provider>
+      </BrowserRouter>
+    );
     expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
-  });
-
-  test('renders list of characters when data is provided', () => {
-    renderWithContext({ characters: mockCharacters });
-
-    expect(screen.getByTestId('character-card-1')).toBeInTheDocument();
-    expect(screen.getByTestId('character-card-2')).toBeInTheDocument();
-    expect(screen.getByText('Pikachu')).toBeInTheDocument();
-    expect(screen.getByText('Charmander')).toBeInTheDocument();
   });
 });

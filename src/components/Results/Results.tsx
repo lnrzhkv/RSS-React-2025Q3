@@ -8,7 +8,6 @@ import { useGlobalContext } from '../../context/hooks/useGlobalContext';
 const Results: React.FC = () => {
   const { characters, error, loading, setIsDetailsOpen } = useGlobalContext();
 
-  console.log(characters, 'characters');
   const [searchParams, setSearchParams] = useSearchParams();
   const handleClickItem = useCallback(
     (id: string) => {

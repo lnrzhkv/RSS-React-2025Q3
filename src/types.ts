@@ -7,3 +7,5 @@ export interface AppState {
   searchTerm: string;
   page: number;
 }
+
+export type Theme = 'light' | 'dark';

@@ -1,10 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import AppLayout from './AppLayout';
+import { GlobalProvider } from '../../context/GlobalContext';
 
 const MockChild = () => (
   <div data-testid="mock-child">Mock Child Component</div>
 );
+
+jest.mock('../../context/hooks/useGlobalContext', () => ({
+  useGlobalContext: () => ({
+    theme: 'light',
+  }),
+}));
 
 jest.mock('../../components/Navigation/Navigation', () => {
   function MockedNavigation() {
@@ -17,7 +24,9 @@ describe('AppLayout Component', () => {
   it('renders the layout container', () => {
     render(
       <MemoryRouter>
-        <AppLayout />
+        <GlobalProvider>
+          <AppLayout />
+        </GlobalProvider>
       </MemoryRouter>
     );
     expect(screen.getByTestId('layout-container')).toBeInTheDocument();
@@ -26,7 +35,9 @@ describe('AppLayout Component', () => {
   it('includes the Navigation component', () => {
     render(
       <MemoryRouter>
-        <AppLayout />
+        <GlobalProvider>
+          <AppLayout />
+        </GlobalProvider>
       </MemoryRouter>
     );
     expect(screen.getByTestId('mocked-navigation')).toBeInTheDocument();
@@ -35,11 +46,13 @@ describe('AppLayout Component', () => {
   it('renders the Outlet content when nested routes are provided', () => {
     render(
       <MemoryRouter initialEntries={['/']}>
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<MockChild />} />
-          </Route>
-        </Routes>
+        <GlobalProvider>
+          <Routes>
+            <Route element={<AppLayout />}>
+              <Route path="/" element={<MockChild />} />
+            </Route>
+          </Routes>
+        </GlobalProvider>
       </MemoryRouter>
     );
 
@@ -49,7 +62,9 @@ describe('AppLayout Component', () => {
   it('has the correct CSS class applied', () => {
     render(
       <MemoryRouter>
-        <AppLayout />
+        <GlobalProvider>
+          <AppLayout />
+        </GlobalProvider>
       </MemoryRouter>
     );
     const container = screen.getByTestId('layout-container');
@@ -59,7 +74,9 @@ describe('AppLayout Component', () => {
   it('contains the outlet slot div', () => {
     render(
       <MemoryRouter>
-        <AppLayout />
+        <GlobalProvider>
+          <AppLayout />
+        </GlobalProvider>
       </MemoryRouter>
     );
     expect(screen.getByTestId('outlet-slot')).toBeInTheDocument();
