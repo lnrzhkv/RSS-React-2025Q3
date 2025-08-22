@@ -1,14 +1,25 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, type Dispatch, type SetStateAction } from 'react';
 import Loader from './Loader';
 import ResultsItem from './ResultsItem';
 import styles from './Results.module.css';
 import { useSearchParams } from 'react-router-dom';
-import { useGlobalContext } from '../../context/hooks/useGlobalContext';
+import type { CharacterWithImage } from '../../shared/api/types';
 
-const Results: React.FC = () => {
-  const { characters, error, loading, setIsDetailsOpen } = useGlobalContext();
+interface ResultsProps {
+  characters: CharacterWithImage[];
+  error: string | null;
+  loading: boolean;
+  setIsDetailsOpen: Dispatch<SetStateAction<boolean>>;
+}
 
+const Results: React.FC<ResultsProps> = ({
+  characters,
+  error,
+  loading,
+  setIsDetailsOpen,
+}) => {
   const [searchParams, setSearchParams] = useSearchParams();
+
   const handleClickItem = useCallback(
     (id: string) => {
       const newParams = new URLSearchParams(searchParams);
@@ -53,3 +64,5 @@ const Results: React.FC = () => {
 };
 
 export default Results;
+
+Results.displayName = 'Results';

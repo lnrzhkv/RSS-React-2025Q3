@@ -1,25 +1,29 @@
 .notFoundContainer {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 2rem;
+  max-width: var(--max-width-md);
+  margin: var(--margin-xl) auto;
+  padding: var(--padding-xxl);
   text-align: center;
   background-color: var(--box-color-bg);
-  border-radius: 8px;
+  border-radius: var(--border-radius-md);
   box-shadow: var(--box-shadow);
 }
 
 .homeLink {
   display: inline-block;
-  margin-top: 1.5rem;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--section-bg);
-  border-radius: 4px;
+  margin-top: var(--margin-lg);
+  padding: var(--padding-md) var(--padding-xl);
+  background-color: var(--background-color);
+  border-radius: var(--border-radius-md);
   text-decoration: none;
   color: var(--text-color);
-  font-weight: 500;
+  font-weight: var(--font-weight-md);
   border: 0.5px solid var(--card-border);
 }
 
 .homeLink:hover {
-  background-color: var(--skeleton-color);
+  background-color: var(--card-bg);
+}
+
+.notFoundTitle {
+  color: var(--primary-color);
 }

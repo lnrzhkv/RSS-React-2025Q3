@@ -1,8 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styles from './AboutPage.module.css';
 
 const AboutPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleBackClick = () => {
+    const savedPage = sessionStorage.getItem('pokemonListPage') || '1';
+    navigate(`/?page=${savedPage}`);
+  };
+
   return (
     <div className={styles.aboutContainer}>
       <h1>About Pokémon Search</h1>
@@ -21,9 +28,9 @@ const AboutPage: React.FC = () => {
           RS School React
         </a>
       </p>
-      <Link className={styles.backLink} to="/">
+      <button className={styles.backLink} onClick={handleBackClick}>
         Back to main page
-      </Link>
+      </button>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import type { Character } from './services/api/types';
+import type { Character } from './shared/api/types';
 
 export interface AppState {
   characters: Character[];

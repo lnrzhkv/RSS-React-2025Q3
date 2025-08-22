@@ -1,9 +1,9 @@
 import React from 'react';
 import styles from './Results.module.css';
-import type { CharacterWithImage } from '../../services/api/types';
+import type { CharacterWithImage } from '../../shared/api/types';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../shared/store';
-import { addItem, removeItem } from '../../shared/selectedItemsSlice';
+import { RootState } from '../../shared/store/store';
+import { addItem, removeItem } from '../../shared/store/selectedItemsSlice';
 
 interface Props {
   character: CharacterWithImage;
@@ -46,13 +46,7 @@ const ResultsItem: React.FC<Props> = ({ character }) => {
         />
         <span className={styles.slider}></span>
       </label>
-      <div
-        style={{
-          cursor: 'pointer',
-          display: 'inline-block',
-          width: 'calc(100% - 40px)',
-        }}
-      >
+      <div className={styles.characterInfo}>
         <h3 className={styles.characterName}>{character.name}</h3>
         <p className={styles.characterDetails}>
           Height: {character.height}, Weight: {character.weight}

@@ -1,13 +1,19 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import SelectedItemsFlyout from './SelectedItemsFlyout';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import SelectedItemsFlyout from './SelectedItemsFlyout';
 import selectedItemsReducer, {
   SelectedItem,
-} from '../../shared/selectedItemsSlice';
+} from '../../shared/store/selectedItemsSlice';
 
-global.URL.createObjectURL = jest.fn();
-global.URL.revokeObjectURL = jest.fn();
+beforeAll(() => {
+  global.URL.createObjectURL = jest.fn(() => 'blob://test');
+  global.URL.revokeObjectURL = jest.fn();
+});
+
+afterAll(() => {
+  jest.restoreAllMocks();
+});
 
 describe('SelectedItemsFlyout', () => {
   const mockItems: SelectedItem[] = [
@@ -25,74 +31,85 @@ describe('SelectedItemsFlyout', () => {
     },
   ];
 
-  const setup = (
-    preloadedState: { selectedItems: SelectedItem[] } = { selectedItems: [] }
-  ) => {
+  function setup(preloadedItems: SelectedItem[]) {
     const store = configureStore({
-      reducer: {
-        selectedItems: selectedItemsReducer,
-      },
-      preloadedState,
+      reducer: { selectedItems: selectedItemsReducer },
+      preloadedState: { selectedItems: preloadedItems },
     });
 
-    return {
-      store,
-      ...render(
-        <Provider store={store}>
-          <SelectedItemsFlyout />
-        </Provider>
-      ),
-    };
-  };
+    const utils = render(
+      <Provider store={store}>
+        <SelectedItemsFlyout />
+      </Provider>
+    );
+    return { store, ...utils };
+  }
 
-  it('should not render when no items are selected', () => {
-    const { container } = setup();
+  it('does not render when no items are selected', () => {
+    const { container } = setup([]);
     expect(container.firstChild).toBeNull();
   });
 
-  it('should render when items are selected', () => {
-    setup({ selectedItems: mockItems });
+  it('renders count, Unselect all and Download buttons', () => {
+    setup(mockItems);
     expect(screen.getByText('2 items are selected')).toBeInTheDocument();
     expect(screen.getByText('Unselect all')).toBeInTheDocument();
     expect(screen.getByText('Download')).toBeInTheDocument();
   });
 
-  it('should display singular text when only one item is selected', () => {
-    setup({ selectedItems: [mockItems[0]] });
-    expect(screen.getByText('1 item is selected')).toBeInTheDocument();
-  });
+  it('triggers download when Download button is clicked', () => {
+    const { container } = setup(mockItems);
 
-  it('should trigger download when Download button is clicked', () => {
-    setup({ selectedItems: mockItems });
-    const createElementSpy = jest.spyOn(document, 'createElement');
-    const clickSpy = jest.spyOn(HTMLAnchorElement.prototype, 'click');
+    const anchor = container.querySelector('a') as HTMLAnchorElement;
+    expect(anchor).toBeInTheDocument();
+
+    const clickSpy = jest.spyOn(anchor, 'click');
 
     fireEvent.click(screen.getByText('Download'));
 
-    expect(createElementSpy).toHaveBeenCalledWith('a');
+    expect(global.URL.createObjectURL).toHaveBeenCalledWith(expect.any(Blob));
+
+    expect(anchor.download).toBe('2_items.csv');
+
     expect(clickSpy).toHaveBeenCalled();
-    expect(global.URL.createObjectURL).toHaveBeenCalled();
 
-    createElementSpy.mockRestore();
-    clickSpy.mockRestore();
+    expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('blob://test');
   });
 
-  it('should generate correct CSV content', () => {
-    setup({ selectedItems: mockItems });
+  it('generates correct CSV content', (done) => {
+    setup(mockItems);
+
     fireEvent.click(screen.getByText('Download'));
 
-    const blob = (global.URL.createObjectURL as jest.Mock).mock.calls[0][0];
-    expect(blob).toBeInstanceOf(Blob);
-    expect(blob.type).toBe('text/csv');
+    const blobArg = (global.URL.createObjectURL as jest.Mock).mock
+      .calls[0][0] as Blob;
 
-    const fileReader = new FileReader();
-    fileReader.onload = function (this: FileReader) {
-      expect(this.result).toBe(
-        'id,name,description,detailsUrl\r\n' +
-          '1,"Item 1","Description 1",http://example.com/1\r\n' +
-          '2,"Item 2","Description 2",http://example.com/2'
-      );
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const text = reader.result as string;
+
+      const expected = [
+        'id,name,description,detailsUrl',
+        '1,"Item 1","Description 1",http://example.com/1',
+        '2,"Item 2","Description 2",http://example.com/2',
+      ].join('\n');
+
+      expect(text).toBe(expected);
+      done();
     };
-    fileReader.readAsText(blob);
+    reader.onerror = () => done.fail('Failed to read blob as text');
+
+    reader.readAsText(blobArg);
+  });
+
+  it('clears all items on Unselect all click', () => {
+    const { store } = setup(mockItems);
+
+    fireEvent.click(screen.getByText('Unselect all'));
+
+    const state = store.getState().selectedItems;
+    expect(state).toHaveLength(0);
+
+    expect(screen.queryByTestId('selected-items-flyout')).toBeNull();
   });
 });

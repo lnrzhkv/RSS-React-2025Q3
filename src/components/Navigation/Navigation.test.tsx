@@ -1,92 +1,67 @@
-import { render, screen } from '@testing-library/react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { render, screen, fireEvent } from '@testing-library/react';
 import Navigation from './Navigation';
-import { GlobalContext } from '../../context/GlobalContext';
+import * as reactRouterDom from 'react-router-dom';
+import * as themeHook from '../../context/hooks/useThemeContext';
 
-const mockContext = {
-  onChangeSearchValue: jest.fn(),
-  fetchPokemons: jest.fn(),
-  searchValue: '',
-  characters: [],
-  loading: false,
-  error: null,
-  pagination: {
-    currentPage: '1',
-    totalPages: 1,
-    setPage: jest.fn(),
-    hasNext: false,
-    hasPrev: false,
-    onPreviousPage: jest.fn(),
-    onNextPage: jest.fn(),
-    onPageChange: jest.fn(),
-  },
-  theme: 'light' as const,
-  toggleTheme: jest.fn(),
-  fetchCharacterBySearch: jest.fn(),
-  setIsDetailsOpen: jest.fn(),
-  isDetailsOpen: false,
-};
+const mockNavigate = jest.fn();
+const mockToggleTheme = jest.fn();
 
-jest.mock('react-router-dom', () => {
-  const originalModule = jest.requireActual('react-router-dom');
-  return {
-    ...originalModule,
-    Link: ({ to, children }: { to: string; children: React.ReactNode }) => (
-      <a href={to} data-testid={`link-${to}`}>
-        {children}
-      </a>
-    ),
-  };
-});
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn(),
+}));
 
-describe('Navigation Component', () => {
-  it('renders navigation component', () => {
-    render(
-      <Router>
-        <GlobalContext.Provider value={mockContext}>
-          <Navigation />
-        </GlobalContext.Provider>
-      </Router>
-    );
+jest.mock('../../context/hooks/useThemeContext', () => ({
+  useThemeContext: jest.fn(),
+}));
 
-    const navElement = screen.getByTestId('nav');
-    expect(navElement).toBeInTheDocument();
+describe('Navigation', () => {
+  beforeAll(() => {
+    (reactRouterDom.useNavigate as jest.Mock).mockReturnValue(mockNavigate);
   });
 
-  it('contains correct navigation links', () => {
-    render(
-      <Router>
-        <GlobalContext.Provider value={mockContext}>
-          <Navigation />
-        </GlobalContext.Provider>
-      </Router>
-    );
-
-    const homeLink = screen.getByTestId('nav-item-home');
-    const aboutLink = screen.getByTestId('nav-item-about');
-
-    expect(homeLink).toBeInTheDocument();
-    expect(homeLink).toHaveTextContent('Home');
-
-    expect(aboutLink).toBeInTheDocument();
-    expect(aboutLink).toHaveTextContent('About');
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('applies correct CSS classes', () => {
-    render(
-      <Router>
-        <GlobalContext.Provider value={mockContext}>
-          <Navigation />
-        </GlobalContext.Provider>
-      </Router>
-    );
+  it('renders Home, About and light-mode icon; navigates and toggles theme', () => {
+    (themeHook.useThemeContext as jest.Mock).mockReturnValue({
+      toggleTheme: mockToggleTheme,
+      theme: 'light',
+    });
 
-    const navElement = screen.getByTestId('nav');
-    const homeLink = screen.getByTestId('nav-item-home');
-    const aboutLink = screen.getByTestId('nav-item-about');
+    render(<Navigation />);
 
-    expect(navElement).toHaveClass('nav');
-    expect(homeLink).toHaveClass('navLink');
-    expect(aboutLink).toHaveClass('navLink');
+    const nav = screen.getByTestId('nav');
+    expect(nav).toBeInTheDocument();
+
+    const home = screen.getByTestId('nav-item-home');
+    const about = screen.getByTestId('nav-item-about');
+    const toggleBtn = screen.getByRole('button', { name: /toggle theme/i });
+
+    expect(home).toHaveTextContent('Home');
+    expect(about).toHaveTextContent('About');
+    expect(toggleBtn).toHaveTextContent('☾');
+
+    fireEvent.click(home);
+    expect(mockNavigate).toHaveBeenCalledWith('/');
+
+    fireEvent.click(about);
+    expect(mockNavigate).toHaveBeenCalledWith('/about');
+
+    fireEvent.click(toggleBtn);
+    expect(mockToggleTheme).toHaveBeenCalled();
+  });
+
+  it('shows sun icon when theme is dark', () => {
+    (themeHook.useThemeContext as jest.Mock).mockReturnValue({
+      toggleTheme: mockToggleTheme,
+      theme: 'dark',
+    });
+
+    render(<Navigation />);
+
+    const toggleBtn = screen.getByRole('button', { name: /toggle theme/i });
+    expect(toggleBtn).toHaveTextContent('☀︎');
   });
 });

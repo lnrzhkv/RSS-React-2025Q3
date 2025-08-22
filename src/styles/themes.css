@@ -1,8 +1,63 @@
 :root {
   --max-width: 920px;
-  --border-radius: 8px;
-  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --max-width-sm: 500px;
+  --max-width-md: 600px;
+  --max-width-lg: 700px;
+  --width-100: 100%;
+
+  --padding-xxs: 2px;
+  --padding-xs: 4px;
+  --padding-s: 8px;
+  --padding-base: 10px;
+  --padding-md: 12px;
+  --padding-lg: 16px;
+  --padding-xl: 20px;
+  --padding-xxl: 30px;
+
+  --margin-xs: 4px;
+  --margin-sm: 10px;
+  --margin-md: 16px;
+  --margin-lg: 20px;
+  --margin-xl: 32px;
+  --margin-xxl: 40px;
+  --margin-2xl: 50px;
+  --margin-3xl: 90px;
+
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 20px;
+
+  --box-shadow: 0 2px 4px rgba(0, 0,  ͡0, 0.1);
+  --card-hover-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+
   --transition: all 0.3s ease;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-md: 20px;
+  --font-size-lg: 24px;
+  --font-size-xl: 48px;
+
+  --font-weight-md: 500;
+  --font-weight-lg: 600;
+  --font-weight-bold: 700;
+
+  --letter-spacing-s: 60px;
+
+  --toggle-width: 50px;
+  --toggle-height: 24px;
+  --toggle-slider-size: 18px;
+
+  --icon-size: 16px;
+  --min-button-width: 40px;
+
+  --gap-xs: 6px;
+  --gap-sm: 10px;
+  --gap-md: 16px;
+  --gap-lg: 20px;
+  --gap-xl: 24px;
+  --gap-xxl: 32px;
 }
 
 [data-theme="light"] {
@@ -26,9 +81,16 @@
   --hover-bg: #e8e8e8;
   --muted-text: #7f8c8d;
   --skeleton-color: #e0e0e0;
-  --card-bg: white;
+  --card-bg: rgb(239, 239, 239);
   --card-border: #eee;
   --card-hover-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  --body-bg: #dedbd2;
+  --body-color: #363732;
+  --refresh-icon: #b6b1b1;
+  --refresh-icon-hover: #666;
+  --refresh-button-bg: #638764;
+  --refresh-button-hover: #4f6b50;
+  --flyout-bg: rgba(44, 44, 44, 0.4);
 }
 
 [data-theme="dark"] {
@@ -55,4 +117,11 @@
   --card-bg: #252525;
   --card-border: #444;
   --card-hover-shadow: 0 1px 6px rgba(255, 255, 255, 0.1);
+  --body-bg: #797979;
+  --body-color: #e0e0e0;
+  --refresh-icon: #b0b0b0;
+  --refresh-icon-hover: #999;
+  --refresh-button-bg: #5a7a5b;
+  --refresh-button-hover: #486648;
+  --flyout-bg: rgba(22, 22, 22, 0.6);
 }

@@ -1,28 +1,26 @@
 .appContainer {
-   max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 20px;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  transition: var(--transition);
+  max-width: var(--max-width);
+  padding: var(--padding-xl);
+  margin-top: var(--margin-xl);
+  margin-bottom: var(--margin-xxl);
 }
 
 .topSection {
-  margin-bottom: 30px;
+  margin-bottom: var(--margin-xl);
 }
 
 .appTitle {
   color: var(--primary-color);
   text-align: center;
-  margin-bottom: 20px;
-  font-weight: 700;
-  letter-spacing: 60px;
+  margin-bottom: var(--margin-lg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-s);
 }
 
 .resultsSection {
   background-color: var(--section-bg);
-  padding: 20px;
-  border-radius: 8px;
+  padding: var(--padding-xl);
+  border-radius: var(--border-radius-md);
   box-shadow: var(--box-shadow);
 }
 
@@ -32,14 +30,14 @@
 }
 
 .footer {
-  margin-top: 30px;
+  margin-top: var(--margin-xl);
   text-align: center;
 }
 
 .nav {
-  padding: 1rem;
-  margin-bottom: 2rem;
-   background-color: var(--nav-bg);
+  padding: var(--padding-lg);
+  margin-bottom: var(--margin-xl);
+  background-color: var(--nav-bg);
   border-bottom: 1px solid var(--nav-border);
   display: flex;
   justify-content: space-between;
@@ -54,13 +52,13 @@
 }
 
 .nav li {
-  margin-right: 1rem;
+  margin-right: var(--margin-md);
 }
 
 .nav a {
   text-decoration: none;
   color: var(--nav-link);
-  font-weight: 500;
+  font-weight: var(--font-weight-md);
 }
 
 .nav a:hover {

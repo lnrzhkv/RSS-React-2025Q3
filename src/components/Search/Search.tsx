@@ -1,22 +1,32 @@
-import type { ChangeEvent } from 'react';
-import { useGlobalContext } from '../../context/hooks/useGlobalContext';
+import { useState, type ChangeEvent } from 'react';
 import styles from './Search.module.css';
 
-const Search = () => {
-  const {
-    onChangeSearchValue,
-    searchValue,
-    fetchCharacterBySearch,
-    fetchPokemons,
-  } = useGlobalContext();
+interface SearchProps {
+  searchValue: string;
+  onChangeSearchValue: (value: string) => void;
+  onSearch: (searchTerm: string) => Promise<void>;
+  'data-testid'?: string;
+}
+
+const Search = ({
+  searchValue,
+  onChangeSearchValue,
+  onSearch,
+  'data-testid': testId,
+}: SearchProps) => {
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
-    console.log(searchValue, 'searchValuesearchValuesearchValuesearchValue');
-    if (searchValue?.trim().length) await fetchCharacterBySearch();
-    else await fetchPokemons();
+    try {
+      setSearchError(null);
+      await onSearch(searchValue.trim());
+    } catch {
+      setSearchError('Search failed. Please try again.');
+    }
   };
+
   return (
-    <div className={styles.searchContainer}>
+    <div className={styles.searchContainer} data-testid={testId}>
       <input
         type="text"
         value={searchValue}
@@ -35,6 +45,11 @@ const Search = () => {
       >
         Search
       </button>
+      {searchError && (
+        <div className={styles.errorMessage} data-testid="search-error">
+          {searchError}
+        </div>
+      )}
     </div>
   );
 };

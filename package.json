@@ -17,6 +17,8 @@
     "coverage": "jest --coverage --collectCoverageFrom='src/**/*.{ts,tsx}'"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^7.0.0",
+    "@fortawesome/react-fontawesome": "^0.2.3",
     "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.10.0",
     "react": "^19.1.0",
@@ -38,6 +40,7 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@types/testing-library__jest-dom": "^5.14.9",
+    "@types/whatwg-fetch": "^0.0.33",
     "@vitejs/plugin-react": "^4.6.0",
     "babel-jest": "^30.0.4",
     "eslint": "^9.30.1",
@@ -58,6 +61,7 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "util": "^0.12.5",
-    "vite": "^7.0.4"
+    "vite": "^7.0.4",
+    "whatwg-fetch": "^3.6.20"
   }
 }

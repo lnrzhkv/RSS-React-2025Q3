@@ -1,12 +1,13 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../shared/store';
-import { clearItems } from '../../shared/selectedItemsSlice';
+import { RootState } from '../../shared/store/store';
+import { clearItems } from '../../shared/store/selectedItemsSlice';
 import styles from './SelectedItemsFlyout.module.css';
 
 const SelectedItemsFlyout: React.FC = () => {
   const selectedItems = useSelector((state: RootState) => state.selectedItems);
   const dispatch = useDispatch();
+  const downloadLinkRef = React.useRef<HTMLAnchorElement>(null);
 
   if (selectedItems.length === 0) return null;
 
@@ -25,10 +26,12 @@ const SelectedItemsFlyout: React.FC = () => {
     const csvContent = csvRows.join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${selectedItems.length}_items.csv`;
-    a.click();
+
+    if (downloadLinkRef.current) {
+      downloadLinkRef.current.href = url;
+      downloadLinkRef.current.download = `${selectedItems.length}_items.csv`;
+      downloadLinkRef.current.click();
+    }
     URL.revokeObjectURL(url);
   };
 
@@ -47,6 +50,7 @@ const SelectedItemsFlyout: React.FC = () => {
         <button className={styles.button} onClick={handleDownload}>
           Download
         </button>
+        <a ref={downloadLinkRef} style={{ display: 'none' }} />
       </div>
     </div>
   );
