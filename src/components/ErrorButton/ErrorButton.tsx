@@ -1,28 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './ErrorButton.module.css';
 
-class ErrorButton extends React.Component {
-  state = { shouldError: false };
+const ErrorButton: React.FC = () => {
+  const [shouldError, setShouldError] = useState(false);
 
-  triggerError = () => {
-    this.setState({ shouldError: true });
+  const triggerError = () => {
+    setShouldError(true);
   };
 
-  render() {
-    if (this.state.shouldError) {
-      throw new Error('Test error triggered by button click');
-    }
-
-    return (
-      <button
-        data-testid="error-button"
-        className={styles.errorButton}
-        onClick={this.triggerError}
-      >
-        Trigger Test Error
-      </button>
-    );
+  if (shouldError) {
+    throw new Error('Test error triggered by button click');
   }
-}
+
+  return (
+    <button
+      data-testid="error-button"
+      className={styles.errorButton}
+      onClick={triggerError}
+    >
+      Trigger Test Error
+    </button>
+  );
+};
 
 export default ErrorButton;

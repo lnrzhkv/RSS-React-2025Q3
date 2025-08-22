@@ -1,0 +1,37 @@
+.aboutContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.courseLink {
+  display: block;
+  margin-top: 0.5rem;
+  color: #185796;
+  text-decoration: none;
+}
+
+.backLink {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+  width: 180px;
+  text-align: center;
+}
+
+.backLink:hover {
+  background-color: #d8d8d8;
+}
