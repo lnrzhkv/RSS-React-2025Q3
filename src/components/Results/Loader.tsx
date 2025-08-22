@@ -4,7 +4,7 @@ import styles from './Results.module.css';
 class Loader extends React.Component {
   render() {
     return (
-      <div className={styles.loaderContainer}>
+      <div className={styles.loaderContainer} data-testid="loader">
         {[...Array(5)].map((_, i) => (
           <div key={i} className={styles.skeletonItem}>
             <div className={styles.skeletonTitle}></div>
