@@ -6,7 +6,10 @@ class ResultsItem extends React.Component<{ character: Character }> {
   render() {
     const { character } = this.props;
     return (
-      <div className={styles.characterCard}>
+      <div
+        className={styles.characterCard}
+        data-testid={`character-card-${this.props.character.id}`}
+      >
         <h3 className={styles.characterName}>{character.name}</h3>
         <p className={styles.characterDetails}>
           Height: {character.height}, Weight: {character.weight}
