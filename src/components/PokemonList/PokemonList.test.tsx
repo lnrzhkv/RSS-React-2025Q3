@@ -1,118 +1,104 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { render, screen, fireEvent } from '@testing-library/react';
 import PokemonList from './PokemonList';
-import { Provider } from 'react-redux';
-import * as apiSlice from '../../shared/api/apiSlice';
-import { store } from '../../shared/store/store';
+import { useSearchParams } from 'next/navigation.js';
 
-jest.mock('../../shared/api/apiSlice', () => ({
-  ...jest.requireActual('../../shared/api/apiSlice'),
-  useLazyGetPokemonsQuery: jest.fn(),
-  useLazySearchPokemonQuery: jest.fn(),
+jest.mock('@/components/PokemonList/PokemonListView.tsx', () => {
+  return function MockListView({ children, searchValue }: unknown) {
+    return (
+      <div data-testid="list-view">
+        LIST(searchValue=&quot;{searchValue}&quot;)
+        {children}
+      </div>
+    );
+  };
+});
+jest.mock('@/components/ResultPokemonList/ResultPokemonList.tsx', () => {
+  return function MockResultList({ setIsDetailsOpen }) {
+    return (
+      <button
+        data-testid="open-list-details"
+        onClick={() => setIsDetailsOpen(true)}
+      >
+        Open List Details
+      </button>
+    );
+  };
+});
+jest.mock('@/components/ResultPokemonSearch/ResultPokemonSearch.tsx', () => {
+  return function MockResultSearch({ setIsDetailsOpen, searchValue }: unknown) {
+    return (
+      <div data-testid="search-view">
+        SEARCH(searchValue=&quot;{searchValue}&quot;)
+        <button
+          data-testid="open-search-details"
+          onClick={() => setIsDetailsOpen(true)}
+        >
+          Open Search Details
+        </button>
+      </div>
+    );
+  };
+});
+jest.mock('@/components/PokemonDetails/PokemonDetails.tsx', () => {
+  return function MockDetails() {
+    return <div data-testid="details-panel">DETAILS</div>;
+  };
+});
+jest.mock('@/components/SelectedItemsFlyout/SelectedItemsFlyout.tsx', () => {
+  return function MockFlyout() {
+    return <div data-testid="flyout">FLYOUT</div>;
+  };
+});
+
+jest.mock('next/navigation.js', () => ({
+  __esModule: true,
+  useSearchParams: jest.fn(),
 }));
 
-const mockCharacters = Array(10)
-  .fill(undefined)
-  .map((_, idx) => ({
-    id: idx + 1,
-    name: `Pikachu ${idx + 1}`,
-    height: 4,
-    weight: 60,
-    image: 'pikachu.png',
-    types: [],
-  }));
-
-describe('PokemonList', () => {
-  let mockTriggerGetPokemons: jest.Mock;
-  let mockTriggerSearch: jest.Mock;
+describe('PokemonList Component', () => {
+  const mockUseSearchParams = useSearchParams as jest.Mock;
 
   beforeEach(() => {
-    mockTriggerGetPokemons = jest.fn();
-    mockTriggerSearch = jest.fn();
-
-    (apiSlice.useLazyGetPokemonsQuery as jest.Mock).mockReturnValue([
-      mockTriggerGetPokemons,
-    ]);
-    (apiSlice.useLazySearchPokemonQuery as jest.Mock).mockReturnValue([
-      mockTriggerSearch,
-    ]);
-
     jest.clearAllMocks();
   });
 
-  const renderComponent = () =>
-    render(
-      <MemoryRouter>
-        <Provider store={store}>
-          <PokemonList />
-        </Provider>
-      </MemoryRouter>
-    );
-
-  it('renders layout and core components with fetched characters', async () => {
-    mockTriggerGetPokemons.mockReturnValue({
-      unwrap: () =>
-        Promise.resolve({
-          results: mockCharacters,
-          count: 20,
-          next: 'next-url',
-          previous: null,
-        }),
+  function renderWithSearchTerm(term?: string) {
+    mockUseSearchParams.mockReturnValue({
+      get: (key: string) => (key === 'searchTerm' ? (term ?? null) : null),
     });
+    return render(<PokemonList />);
+  }
 
-    renderComponent();
-
-    await waitFor(() => {
-      mockCharacters.forEach((char) => {
-        expect(screen.getByText(char.name)).toBeInTheDocument();
-      });
-    });
-
-    expect(screen.getByTestId('pokemonlist-content')).toBeInTheDocument();
-    expect(screen.getByText('Pokémon Search')).toBeInTheDocument();
-    expect(screen.getByText('Search Results')).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText('Search Pokémon...')
-    ).toBeInTheDocument();
+  it('renders list view and flyout when no searchTerm', () => {
+    renderWithSearchTerm(undefined);
+    expect(screen.getByTestId('list-view')).toBeInTheDocument();
+    expect(screen.getByTestId('open-list-details')).toBeInTheDocument();
+    expect(screen.getByTestId('flyout')).toBeInTheDocument();
+    expect(screen.queryByTestId('details-panel')).toBeNull();
   });
 
-  it('shows loader while fetching data', async () => {
-    mockTriggerGetPokemons.mockReturnValue({
-      unwrap: () => new Promise(() => {}),
-    });
+  it('renders search view when searchTerm is present', () => {
+    renderWithSearchTerm('pikachu');
+    expect(screen.getByTestId('list-view')).toBeInTheDocument();
+    expect(screen.getByTestId('search-view')).toBeInTheDocument();
 
-    renderComponent();
-
-    expect(await screen.findByTestId('loader')).toBeInTheDocument();
+    expect(screen.getByTestId('flyout')).toBeInTheDocument();
+    expect(screen.queryByTestId('details-panel')).toBeNull();
   });
 
-  it('shows error message on fetch failure', async () => {
-    mockTriggerGetPokemons.mockReturnValue({
-      unwrap: () => Promise.reject(new Error('fail')),
-    });
+  it('opens details panel when list child triggers it', () => {
+    renderWithSearchTerm(undefined);
 
-    renderComponent();
+    fireEvent.click(screen.getByTestId('open-list-details'));
 
-    await waitFor(() => {
-      expect(screen.getByText('Failed to fetch pokemons')).toBeInTheDocument();
-    });
+    expect(screen.getByTestId('details-panel')).toBeInTheDocument();
   });
 
-  it('shows "No Pokémon found" when list is empty', async () => {
-    mockTriggerGetPokemons.mockReturnValue({
-      unwrap: () =>
-        Promise.resolve({
-          results: [],
-          count: 0,
-          next: null,
-          previous: null,
-        }),
-    });
+  it('opens details panel when search child triggers it', () => {
+    renderWithSearchTerm('charmander');
 
-    renderComponent();
+    fireEvent.click(screen.getByTestId('open-search-details'));
 
-    await waitFor(() => {
-      expect(screen.getByText('No Pokémon found')).toBeInTheDocument();
-    });
+    expect(screen.getByTestId('details-panel')).toBeInTheDocument();
   });
 });

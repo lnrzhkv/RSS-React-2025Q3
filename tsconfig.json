@@ -1,14 +1,24 @@
 {
   "compilerOptions": {
-    "target": "ES2023",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "target": "ESNext",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": false,
     "moduleDetection": "force",
     "noEmit": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "skipLibCheck": true,
     "strict": true,
     "noUnusedLocals": true,
@@ -16,16 +26,37 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "esModuleInterop": true,
-    "types": ["@types/jest", "@types/node", "@testing-library/jest-dom", "whatwg-fetch"],
-    "baseUrl": ".",
+    "types": [
+      "next",
+      "next-intl",
+      "node",
+      "jest"
+    ],
+    "allowJs": true,
+    "incremental": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
-    "src/**/*",
-    "vite.config.ts",
-    "jest.config.js",
-    "jest.setup.ts",
+    "src/app/**/*",
     "global.d.ts",
-    "__mocks__/**/*"
+    "jest.config.js",
+    "jest.setup.tsx",
+    "middleware.ts",
+    "next.config.mjs",
+    "src/**/*",
+    ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    ".next"
+  ]
 }

@@ -1,16 +1,24 @@
+'use client';
+
 import React from 'react';
 import styles from './Results.module.css';
-import type { CharacterWithImage } from '../../shared/api/types';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../shared/store/store';
-import { addItem, removeItem } from '../../shared/store/selectedItemsSlice';
+import type { CharacterWithImage } from '@/shared/api/types.ts';
+import { RootState } from '@/shared/store/store.ts';
+import { addItem, removeItem } from '@/shared/store/selectedItemsSlice.ts';
+import { useAppDispatch, useAppSelector } from '@/shared/store/hooks.ts';
+import { useTranslations } from 'next-intl';
+import ResultsItemView from './ResultsItemView.tsx';
 
 interface Props {
   character: CharacterWithImage;
 }
+
 const ResultsItem: React.FC<Props> = ({ character }) => {
-  const selectedItems = useSelector((state: RootState) => state.selectedItems);
-  const dispatch = useDispatch();
+  const t = useTranslations('ResultsItem');
+  const selectedItems = useAppSelector(
+    (state: RootState) => state.selectedItems
+  );
+  const dispatch = useAppDispatch();
 
   const isSelected = selectedItems.some(
     (item) => item.id === String(character.id)
@@ -22,7 +30,10 @@ const ResultsItem: React.FC<Props> = ({ character }) => {
         addItem({
           id: String(character.id),
           name: character.name,
-          description: `Height: ${character.height}, Weight: ${character.weight}`,
+          description: t('description', {
+            height: character.height,
+            weight: character.weight,
+          }),
           detailsUrl: `/details/${character.id}`,
         })
       );
@@ -30,6 +41,12 @@ const ResultsItem: React.FC<Props> = ({ character }) => {
       dispatch(removeItem(String(character.id)));
     }
   };
+
+  const typesText = character.types.map((tt) => tt.type.name).join(', ');
+  const description = t('heightWeight', {
+    height: character.height,
+    weight: character.weight,
+  });
 
   return (
     <div
@@ -41,21 +58,17 @@ const ResultsItem: React.FC<Props> = ({ character }) => {
           type="checkbox"
           checked={isSelected}
           onChange={handleCheckboxChange}
-          aria-label={`select-${character.name}`}
+          aria-label={t('selectAriaLabel', { name: character.name })}
           className={styles.toggleInput}
         />
         <span className={styles.slider}></span>
       </label>
-      <div className={styles.characterInfo}>
-        <h3 className={styles.characterName}>{character.name}</h3>
-        <p className={styles.characterDetails}>
-          Height: {character.height}, Weight: {character.weight}
-        </p>
-        <p className={styles.characterType}>
-          Types: {character.types.map((t) => t.type.name).join(', ')}
-        </p>
-      </div>
-      <img src={character.image} alt={character.name} />
+
+      <ResultsItemView
+        character={character}
+        description={description}
+        typesText={typesText}
+      />
     </div>
   );
 };

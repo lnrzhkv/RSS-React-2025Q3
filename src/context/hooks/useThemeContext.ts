@@ -1,5 +1,7 @@
+'use client';
+
 import { useContext } from 'react';
-import { ThemeContext } from '../ThemeContext';
+import { ThemeContext } from '@/context/ThemeContext.tsx';
 
 export const useThemeContext = () => {
   const context = useContext(ThemeContext);

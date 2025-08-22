@@ -1,5 +1,6 @@
 import { useState, type ChangeEvent } from 'react';
 import styles from './Search.module.css';
+import { useTranslations } from 'next-intl';
 
 interface SearchProps {
   searchValue: string;
@@ -14,15 +15,12 @@ const Search = ({
   onSearch,
   'data-testid': testId,
 }: SearchProps) => {
+  const t = useTranslations('Search');
   const [searchError, setSearchError] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
-    try {
-      setSearchError(null);
-      await onSearch(searchValue.trim());
-    } catch {
-      setSearchError('Search failed. Please try again.');
-    }
+  const handleSubmit = () => {
+    setSearchError(null);
+    onSearch(searchValue.trim());
   };
 
   return (
@@ -33,7 +31,7 @@ const Search = ({
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
           onChangeSearchValue(e.target.value)
         }
-        placeholder="Search Pokémon..."
+        placeholder={t('searchPlaceholder')}
         className={styles.searchInput}
         data-testid="search-input"
       />
@@ -43,7 +41,7 @@ const Search = ({
         className={styles.searchButton}
         aria-label="Search"
       >
-        Search
+        {t('searchButton')}
       </button>
       {searchError && (
         <div className={styles.errorMessage} data-testid="search-error">

@@ -1,13 +1,18 @@
 import React from 'react';
 import styles from './ErrorBoundary.module.css';
 
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  t: (key: string) => string;
+}
+
 interface ErrorBoundaryState {
   hasError: boolean;
   error?: Error;
 }
 
 class ErrorBoundary extends React.Component<
-  React.PropsWithChildren,
+  ErrorBoundaryProps,
   ErrorBoundaryState
 > {
   state: ErrorBoundaryState = { hasError: false };
@@ -21,17 +26,19 @@ class ErrorBoundary extends React.Component<
   }
 
   render() {
+    const { t } = this.props;
+
     if (this.state.hasError) {
       return (
         <div
           className={styles.errorBoundary}
           data-testid="error-boundary-fallback"
         >
-          <h2 className={styles.title}>Something went wrong</h2>
+          <h2 className={styles.title}>{t('ErrorBoundary.title')}</h2>
           <p className={styles.message}>
-            {this.state.error?.message || 'Unknown error'}
+            {this.state.error?.message || t('ErrorBoundary.unknownError')}
           </p>
-          <p>Please refresh the page or try again later.</p>
+          <p>{t('ErrorBoundary.description')}</p>
         </div>
       );
     }

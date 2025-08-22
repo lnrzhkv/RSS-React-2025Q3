@@ -1,43 +1,58 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import Box from '../../components/Box/Box';
-import { useLocation, useSearchParams } from 'react-router-dom';
+'use client';
+import React, { type FC } from 'react';
+import Box from '@/components/Box/Box.tsx';
 import styles from './PokemonDetails.module.css';
-import { useGetPokemonDetailsQuery } from '../../shared/api/apiSlice';
-import Loader from '../Results/Loader';
+import {
+  pokemonApi,
+  useGetPokemonDetailsQuery,
+} from '@/shared/api/apiSlice.ts';
+import Loader from '@/components/Results/Loader.tsx';
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSync } from '@fortawesome/free-solid-svg-icons';
+import { useAppDispatch } from '@/shared/store/hooks.ts';
+import { useRouter } from '@/shared/lib/navigation.ts';
+import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation.js';
 
-const PokemonDetails: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const location = useLocation();
-  const [charId, setCharId] = useState<string | null | undefined>();
+interface Props {
+  setIsDetailsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const PokemonDetails: FC<Props> = ({ setIsDetailsOpen }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const dispatch = useAppDispatch();
+  const t = useTranslations('PokemonDetails');
+
+  const characterId = searchParams.get('characterId');
 
   const {
     data: details,
     isLoading,
     isError,
     error,
-    refetch,
     isFetching,
-  } = useGetPokemonDetailsQuery(charId ?? '', { skip: !charId });
+  } = useGetPokemonDetailsQuery(characterId ?? '', {
+    skip: !characterId,
+  });
 
   const handleClose = () => {
-    searchParams.delete('characterId');
-    setSearchParams(searchParams);
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.delete('characterId');
+    router.replace(`/?${newParams.toString()}`);
+    setIsDetailsOpen(false);
   };
 
-  const handleRefresh = useCallback(async () => {
-    await refetch();
-  }, [refetch]);
+  const handleRefresh = () => {
+    dispatch(
+      pokemonApi.util.invalidateTags([
+        { type: 'PokemonDetails', id: 'characterId' },
+      ])
+    );
+  };
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const characterId = params.get('characterId');
-    setCharId(characterId);
-  }, [location.search]);
-
-  if (!charId) return null;
+  if (!characterId || !details) return null;
 
   const getErrorMessage = (error: FetchBaseQueryError | unknown): string => {
     if (typeof error === 'object' && error !== null) {
@@ -55,15 +70,15 @@ const PokemonDetails: React.FC = () => {
   };
 
   const listData = [
-    { label: 'Base happyness', value: details?.baseHappyness },
-    { label: 'Color', value: details?.color },
-    { label: 'Generation', value: details?.generation },
-    { label: 'Growth rate', value: details?.growthRate },
-    { label: 'Shape', value: details?.shape },
-    { label: 'Form switchable', value: details?.formSwitchable },
-    { label: 'Baby', value: details?.isBaby },
-    { label: 'Legendary', value: details?.isLegendary },
-    { label: 'Mythical', value: details?.isMythical },
+    { label: t('baseHappyness'), value: details?.baseHappyness },
+    { label: t('color'), value: details?.color },
+    { label: t('generation'), value: details?.generation },
+    { label: t('growthRate'), value: details?.growthRate },
+    { label: t('shape'), value: details?.shape },
+    { label: t('formSwitchable'), value: details?.formSwitchable },
+    { label: t('baby'), value: details?.isBaby },
+    { label: t('legendary'), value: details?.isLegendary },
+    { label: t('mythical'), value: details?.isMythical },
   ];
 
   return (

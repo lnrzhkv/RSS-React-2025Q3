@@ -1,8 +1,12 @@
+'use client';
+
 import React, { useState } from 'react';
 import styles from './ErrorButton.module.css';
+import { useTranslations } from 'next-intl';
 
 const ErrorButton: React.FC = () => {
   const [shouldError, setShouldError] = useState(false);
+  const t = useTranslations('ErrorButton');
 
   const triggerError = () => {
     setShouldError(true);
@@ -18,7 +22,7 @@ const ErrorButton: React.FC = () => {
       className={styles.errorButton}
       onClick={triggerError}
     >
-      Trigger Test Error
+      {t('triggerError')}
     </button>
   );
 };

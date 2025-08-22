@@ -1,17 +1,35 @@
-/** @type {import('jest').Config} */
-const config = {
-  verbose: false,
-  preset: 'ts-jest',
+import nextJest from 'next/jest.js';
+
+const createJestConfig = nextJest({
+  dir: './',
+});
+
+const customConfig = {
+  roots: ['<rootDir>/src'],
+
   testEnvironment: 'jest-environment-jsdom',
-  rootDir: '.',
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts', '<rootDir>/src/setupTests.ts'],
-  transform: {
-    '^.+\\.tsx?$': 'ts-jest',
-  },
+
+  setupFilesAfterEnv: [
+    '<rootDir>/jest.setup.ts',
+    '<rootDir>/src/setupTests.ts',
+  ],
+
   moduleNameMapper: {
-    '\\.(gif|ttf|eot|svg|png)$': '<rootDir>/__mocks__/fileMock.js',
+    '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '\\.(gif|ttf|eot|svg|png)$': '<rootDir>/__mocks__/fileMock.js',
   },
+
+  testPathIgnorePatterns: [
+    '<rootDir>/.next/',
+    '<rootDir>/node_modules/',
+    '<rootDir>/test/',
+  ],
+
+  transformIgnorePatterns: [
+    '/node_modules/(?!(next-intl)/)',
+  ],
+
   collectCoverage: true,
   coverageDirectory: '.coverage',
   coverageThreshold: {
@@ -23,4 +41,5 @@ const config = {
     },
   },
 };
-export default config;
+
+export default createJestConfig(customConfig);

@@ -1,12 +1,18 @@
+'use client';
+
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../shared/store/store';
-import { clearItems } from '../../shared/store/selectedItemsSlice';
-import styles from './SelectedItemsFlyout.module.css';
+import { RootState } from '@/shared/store/store.ts';
+import { clearItems } from '@/shared/store/selectedItemsSlice.ts';
+import { generateCSV } from '@/shared/actions/generate-csv.ts';
+import { useAppDispatch, useAppSelector } from '@/shared/store/hooks.ts';
+import SelectedItemsFlyoutView from './SelectedItemsFlyoutView.tsx';
+import { generateCSVBlob } from '../../shared/actions/generate-csv.client.ts';
 
 const SelectedItemsFlyout: React.FC = () => {
-  const selectedItems = useSelector((state: RootState) => state.selectedItems);
-  const dispatch = useDispatch();
+  const selectedItems = useAppSelector(
+    (state: RootState) => state.selectedItems
+  );
+  const dispatch = useAppDispatch();
   const downloadLinkRef = React.useRef<HTMLAnchorElement>(null);
 
   if (selectedItems.length === 0) return null;
@@ -15,16 +21,12 @@ const SelectedItemsFlyout: React.FC = () => {
     dispatch(clearItems());
   };
 
-  const handleDownload = () => {
-    const csvRows = [
-      'id,name,description,detailsUrl',
-      ...selectedItems.map(
-        (item) =>
-          `${item.id},"${item.name}","${item.description ?? ''}",${item.detailsUrl ?? ''}`
-      ),
-    ];
-    const csvContent = csvRows.join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+  const handleDownload = async () => {
+    const csvString = await generateCSV(selectedItems);
+    if (!csvString) return;
+
+    const blob = generateCSVBlob(csvString);
+
     const url = URL.createObjectURL(blob);
 
     if (downloadLinkRef.current) {
@@ -36,23 +38,16 @@ const SelectedItemsFlyout: React.FC = () => {
   };
 
   return (
-    <div className={styles.flyoutWrapper} data-testid="selected-items-flyout">
-      <div className={styles.flyoutBox}>
-        <span className={styles.count}>
-          {selectedItems.length}{' '}
-          {selectedItems.length === 1
-            ? 'item is selected'
-            : 'items are selected'}
-        </span>
-        <button className={styles.button} onClick={handleUnselectAll}>
-          Unselect all
-        </button>
-        <button className={styles.button} onClick={handleDownload}>
-          Download
-        </button>
-        <a ref={downloadLinkRef} style={{ display: 'none' }} />
+    <>
+      <SelectedItemsFlyoutView items={selectedItems} />
+      <div style={{ display: 'none' }}>
+        <a ref={downloadLinkRef} />
       </div>
-    </div>
+      <div style={{ display: 'none' }}>
+        <button onClick={handleUnselectAll} />
+        <button onClick={handleDownload} />
+      </div>
+    </>
   );
 };
 

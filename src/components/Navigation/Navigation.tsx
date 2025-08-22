@@ -1,32 +1,34 @@
+'use client';
 import React from 'react';
 import styles from './Navigation.module.css';
-import { useNavigate } from 'react-router-dom';
-import { useThemeContext } from '../../context/hooks/useThemeContext';
+import { useTranslations, useLocale } from 'next-intl';
+import { Link, getPathname } from '@/shared/lib/navigation.ts';
+import { useThemeContext } from '@/context/hooks/useThemeContext.ts';
+import { usePathname } from '../../shared/lib/navigation.ts';
 
-const Navigation: React.FC = () => {
-  const navigator = useNavigate();
+export default function Navigation() {
+  const t = useTranslations('Navigation');
   const { toggleTheme, theme } = useThemeContext();
 
-  const handleNavigate = (path: string) => {
-    navigator(path);
-  };
+  const fullPath = usePathname();
+
+  const locale = useLocale();
+
+  const rawPath = getPathname({
+    href: fullPath,
+    locale,
+  });
 
   return (
-    <nav data-testid={'nav'} className={styles.nav}>
-      <div
-        data-testid="nav-item-home"
-        onClick={() => handleNavigate('/')}
-        className={styles.navLink}
-      >
-        Home
-      </div>
-      <div
-        data-testid="nav-item-about"
-        onClick={() => handleNavigate('/about')}
-        className={styles.navLink}
-      >
-        About
-      </div>
+    <nav data-testid="nav" className={styles.nav}>
+      <Link href="/" className={styles.navLink}>
+        {t('home')}
+      </Link>
+
+      <Link href="/about" className={styles.navLink}>
+        {t('about')}
+      </Link>
+
       <button
         onClick={toggleTheme}
         className={styles.themeToggle}
@@ -34,8 +36,28 @@ const Navigation: React.FC = () => {
       >
         {theme === 'light' ? '☾' : '☀︎'}
       </button>
+
+      <div className={styles.languageSwitcher}>
+        <span>{t('language')}: </span>
+
+        <Link
+          href={rawPath}
+          locale="en"
+          className={styles.navLink}
+          scroll={false}
+        >
+          {t('switchToEn')}
+        </Link>
+
+        <Link
+          href={rawPath}
+          locale="ru"
+          className={styles.navLink}
+          scroll={false}
+        >
+          {t('switchToRu')}
+        </Link>
+      </div>
     </nav>
   );
-};
-
-export default Navigation;
+}
