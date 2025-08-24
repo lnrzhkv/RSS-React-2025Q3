@@ -6,6 +6,7 @@ import { Button } from './shared/components/Button/Button';
 import ControlledForm from './widgets/ControlledForm/ControlledForm';
 import DataBox from './shared/components/DataBox/DataBox';
 import { formSchema, type FormData } from './shared/validations/validation';
+import styles from './App.module.css';
 
 const transformData = (
   data: FormData
@@ -80,13 +81,15 @@ function App() {
         />
       )}
 
-      <Button onClick={() => openModal('uncontrolled')}>
-        Open modal with uncontrolled form
-      </Button>
+      <div className={styles.appContainer}>
+        <Button onClick={() => openModal('uncontrolled')}>
+          Open modal with uncontrolled form
+        </Button>
 
-      <Button onClick={() => openModal('controlled')}>
-        Open modal with controlled form
-      </Button>
+        <Button onClick={() => openModal('controlled')}>
+          Open modal with controlled form
+        </Button>
+      </div>
 
       <Modal isOpen={isOpenedUnconterolledModal} onClose={closeModal}>
         <UncontrolledForm />
