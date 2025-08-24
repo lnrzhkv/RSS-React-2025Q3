@@ -1,0 +1,16 @@
+.formElement {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  flex-grow: 1;
+}
+
+.formLabel {
+  font-weight: bold;
+}
+
+.formError {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
