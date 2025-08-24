@@ -1,0 +1,39 @@
+.select {
+  padding: 8px 12px;
+  border: 1px solid #555;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #FFF;
+  color: #9ca3af;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  width: 100%;
+  height: 42px;
+}
+
+
+.select:focus {
+  outline: none;
+  box-shadow: 0 0 0 5px rgba(106, 107, 109, 0.379);
+  background-color: #FFF;
+}
+
+.select:disabled {
+  background-color: #4a5568;
+  color: #a0aec0;
+  border-color: #4a5568;
+  cursor: not-allowed;
+}
+
+.select option {
+  background-color: #cbcdd1;
+  color: #9ca3af;
+  padding: 8px;
+}
+
+.select option:hover,
+.select option:focus,
+.select option:checked {
+  background-color: #7a7b7b;
+  color: #ffffff;
+}
