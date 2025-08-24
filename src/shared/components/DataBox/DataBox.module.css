@@ -1,0 +1,20 @@
+.dataBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  border: 1px solid rgb(93, 92, 92);
+  background-color: #282828;
+  color: #FFF;
+  padding: 12px;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  margin-right: 12px;
+  margin-left: 12px;
+}
+
+.showIndication {
+  border: 1px solid rgb(17, 255, 0);
+  background-color: rgba(0, 255, 47, 0.2);
+}
