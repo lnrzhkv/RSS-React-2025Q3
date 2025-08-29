@@ -1,10 +1,11 @@
 import clsx from "clsx"
+import { memo } from "react"
 
 interface LoaderProps {
 	isCentered?: boolean
 }
 
-export const Loader = ({ isCentered = false }: LoaderProps) => {
+export const Loader = memo(({ isCentered = false }: LoaderProps) => {
 	return (
 		<div
 			className={clsx(
@@ -33,4 +34,4 @@ export const Loader = ({ isCentered = false }: LoaderProps) => {
 			</div>
 		</div>
 	)
-}
+})

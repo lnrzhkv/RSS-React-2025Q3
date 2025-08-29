@@ -2,56 +2,52 @@ import { memo, type FC } from "react"
 import { TableRow } from "./TableRow"
 import type { TableHeadProps } from "./types"
 
-const SortSvg = ({
-	active,
-	order,
-}: {
-	active: boolean
-	order: "asc" | "desc"
-}) => {
-	if (active) {
+const SortSvg = memo(
+	({ active, order }: { active: boolean; order: "asc" | "desc" }) => {
+		if (active) {
+			return (
+				<svg
+					width={14}
+					height={14}
+					className="text-gray-400"
+					aria-hidden="true"
+					viewBox="0 0 20 20"
+					fill="currentColor"
+				>
+					{order === "asc" ? (
+						<path d="M10 4l6 8H4l6-8z" />
+					) : (
+						<path d="M10 16l-6-8h12l-6 8z" />
+					)}
+				</svg>
+			)
+		}
 		return (
-			<svg
-				width={14}
-				height={14}
-				className="text-gray-400"
-				aria-hidden="true"
-				viewBox="0 0 20 20"
-				fill="currentColor"
-			>
-				{order === "asc" ? (
-					<path d="M10 4l6 8H4l6-8z" />
-				) : (
-					<path d="M10 16l-6-8h12l-6 8z" />
-				)}
-			</svg>
+			<span className="flex flex-col items-center gap-[2px]">
+				<svg
+					width={14}
+					height={7}
+					className="text-gray-400"
+					aria-hidden="true"
+					viewBox="0 0 20 7"
+					fill="currentColor"
+				>
+					<path d="M10 0l6 7H4l6-7z" />
+				</svg>
+				<svg
+					width={14}
+					height={7}
+					className="text-gray-400"
+					aria-hidden="true"
+					viewBox="0 0 20 7"
+					fill="currentColor"
+				>
+					<path d="M10 7l-6-7h12l-6 7z" />
+				</svg>
+			</span>
 		)
-	}
-	return (
-		<span className="flex flex-col items-center gap-[2px]">
-			<svg
-				width={14}
-				height={7}
-				className="text-gray-400"
-				aria-hidden="true"
-				viewBox="0 0 20 7"
-				fill="currentColor"
-			>
-				<path d="M10 0l6 7H4l6-7z" />
-			</svg>
-			<svg
-				width={14}
-				height={7}
-				className="text-gray-400"
-				aria-hidden="true"
-				viewBox="0 0 20 7"
-				fill="currentColor"
-			>
-				<path d="M10 7l-6-7h12l-6 7z" />
-			</svg>
-		</span>
-	)
-}
+	},
+)
 
 export const TableHead: FC<TableHeadProps> = memo(
 	({ head, sortingKeys = [], sortBy, order, onSort }) => (

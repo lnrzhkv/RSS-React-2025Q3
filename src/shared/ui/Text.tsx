@@ -1,12 +1,12 @@
 import clsx from "clsx"
-import type { ReactNode } from "react"
+import { memo, type ReactNode } from "react"
 
 interface TextProps {
 	children: ReactNode
 	className?: string
 }
 
-export const Text = ({ children, className }: TextProps) => {
+export const Text = memo(({ children, className }: TextProps) => {
 	return (
 		<div
 			className={clsx(
@@ -18,4 +18,4 @@ export const Text = ({ children, className }: TextProps) => {
 			</p>
 		</div>
 	)
-}
+})

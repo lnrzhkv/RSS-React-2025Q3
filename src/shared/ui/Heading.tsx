@@ -1,12 +1,12 @@
 import clsx from "clsx"
-import type { ReactNode } from "react"
+import { memo, type ReactNode } from "react"
 
 interface HeadingProps {
 	children: ReactNode
 	className?: string
 }
 
-export const Heading = ({ children, className }: HeadingProps) => {
+export const Heading = memo(({ children, className }: HeadingProps) => {
 	return (
 		<h1
 			className={clsx(
@@ -17,4 +17,4 @@ export const Heading = ({ children, className }: HeadingProps) => {
 			{children}
 		</h1>
 	)
-}
+})
