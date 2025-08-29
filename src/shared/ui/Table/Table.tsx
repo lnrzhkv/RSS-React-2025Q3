@@ -71,3 +71,5 @@ export const Table: FC<TableProps> = memo(
 		)
 	},
 )
+
+Table.displayName = "Table"

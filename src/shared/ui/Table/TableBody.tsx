@@ -38,3 +38,5 @@ export const TableBody: FC<TableBodyProps> = memo(
 		)
 	},
 )
+
+TableBody.displayName = "TableBody"

@@ -35,3 +35,5 @@ export const Loader = memo(({ isCentered = false }: LoaderProps) => {
 		</div>
 	)
 })
+
+Loader.displayName = "Loader"

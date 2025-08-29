@@ -47,4 +47,6 @@ const CountrySearch = ({
 	)
 }
 
+CountrySearch.displayName = "CountrySearch"
+
 export default CountrySearch

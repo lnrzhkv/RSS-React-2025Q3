@@ -92,3 +92,5 @@ export const Modal = memo(
 		)
 	},
 )
+
+Modal.displayName = "Modal"

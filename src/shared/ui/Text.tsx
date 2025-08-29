@@ -19,3 +19,5 @@ export const Text = memo(({ children, className }: TextProps) => {
 		</div>
 	)
 })
+
+Text.displayName = "Text"

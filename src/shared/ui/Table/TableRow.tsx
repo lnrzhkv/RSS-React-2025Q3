@@ -15,3 +15,5 @@ export const TableRow: FC<Props> = memo(({ children, onClick }) => (
 		{children}
 	</tr>
 ))
+
+TableRow.displayName = "TableRow"

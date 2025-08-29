@@ -18,3 +18,5 @@ export const Heading = memo(({ children, className }: HeadingProps) => {
 		</h1>
 	)
 })
+
+Heading.displayName = "Heading"

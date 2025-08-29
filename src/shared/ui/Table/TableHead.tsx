@@ -49,6 +49,8 @@ const SortSvg = memo(
 	},
 )
 
+SortSvg.displayName = "SortSvg"
+
 export const TableHead: FC<TableHeadProps> = memo(
 	({ head, sortingKeys = [], sortBy, order, onSort }) => (
 		<thead className="text-xs text-indigo-400 uppercase sticky top-0 border-b-2 border-gray-400">
@@ -80,3 +82,5 @@ export const TableHead: FC<TableHeadProps> = memo(
 		</thead>
 	),
 )
+
+TableHead.displayName = "TableHead"

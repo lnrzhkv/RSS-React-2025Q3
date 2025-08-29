@@ -111,3 +111,5 @@ export const Dropdown = memo(
 		)
 	},
 )
+
+Dropdown.displayName = "Dropdown"

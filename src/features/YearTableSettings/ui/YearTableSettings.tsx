@@ -54,4 +54,6 @@ const YearTableSettings = ({
 	)
 }
 
+YearTableSettings.displayName = "YearTableSettings"
+
 export default YearTableSettings

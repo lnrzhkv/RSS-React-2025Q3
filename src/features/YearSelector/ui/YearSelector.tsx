@@ -18,4 +18,6 @@ const YearSelector = ({
 	)
 }
 
+YearSelector.displayName = "YearSelector"
+
 export default YearSelector

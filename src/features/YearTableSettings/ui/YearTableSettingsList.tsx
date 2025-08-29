@@ -51,3 +51,5 @@ export const YearTableSettingsList = ({
 		</div>
 	)
 }
+
+YearTableSettingsList.displayName = "YearTableSettingsList"

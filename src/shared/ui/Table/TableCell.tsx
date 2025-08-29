@@ -29,3 +29,5 @@ export const TableCell: FC<{ children: ReactNode; withIndication?: boolean }> =
 			</td>
 		)
 	})
+
+TableCell.displayName = "TableCell"

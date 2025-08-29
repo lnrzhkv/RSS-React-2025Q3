@@ -33,4 +33,6 @@ const CountryTable = ({
 	)
 }
 
+CountryTable.displayName = "CountryTable"
+
 export default CountryTable
