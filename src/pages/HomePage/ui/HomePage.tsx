@@ -17,7 +17,7 @@ import { Text } from "../../../shared/ui/Text"
 import { CountryDetails } from "../../../features/CountryDetails"
 
 const HomePage = () => {
-	const { countries } = useCountries()
+	const countries = useCountries()
 	const [selectedCountry, setSelectedCountry] = useState<string | null>(null)
 
 	const {
@@ -26,24 +26,6 @@ const HomePage = () => {
 		activeLabels,
 		handleColumnActiveChange,
 	} = useYearTableSettings()
-
-	const selectedCountryData = useMemo(
-		() => countries[selectedCountry!],
-		[countries, selectedCountry],
-	)
-
-	const yearTableData: TableData = useMemo(() => {
-		return {
-			head: activeLabels,
-			body: Object?.values(selectedCountryData?.data ?? {})
-				?.sort((a, b) => b.year - a.year)
-				?.map((yearData) =>
-					activeKeys?.map(
-						(key) => yearData?.[key as keyof typeof yearData] ?? "N/A",
-					),
-				),
-		}
-	}, [activeKeys, activeLabels, selectedCountryData])
 
 	const { selectedYear, setSelectedYear, yearsOptions } =
 		useYearSelector(countries)
@@ -55,6 +37,24 @@ const HomePage = () => {
 		searchValue,
 		selectedYear,
 	})
+
+	const yearTableData: TableData = useMemo(() => {
+		if (!selectedCountry || !countries[selectedCountry]) {
+			return { head: [], body: [] }
+		}
+
+		const selectedCountryData = countries[selectedCountry]
+		return {
+			head: activeLabels,
+			body: Object?.values(selectedCountryData.data ?? {})
+				?.sort((a, b) => b.year - a.year)
+				?.map((yearData) =>
+					activeKeys?.map(
+						(key) => yearData?.[key as keyof typeof yearData] ?? "N/A",
+					),
+				),
+		}
+	}, [activeKeys, activeLabels, countries, selectedCountry])
 
 	const handleRowClick = useCallback((row: (string | number)[]) => {
 		setSelectedCountry(row[0] as string)
@@ -86,7 +86,7 @@ const HomePage = () => {
 					"shadow-[0_4px_12px_rgba(0,0,0,0.1)]",
 				)}
 			>
-				<div className="flex gap-4 mb-4 justify-between ">
+				<div className="flex gap-4 mb-4 justify-between flex-col sm:flex-row">
 					<CountrySearch
 						searchValue={searchValue}
 						onClickSearch={handleClickSearch}

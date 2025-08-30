@@ -3,26 +3,14 @@ import { Button } from "../../../shared/ui/Button"
 import { SettingsIcon } from "../../../shared/ui/SettingsIcon"
 import { Modal } from "../../../shared/ui/Modal"
 import { YearTableSettingsList } from "./YearTableSettingsList"
+import type { ColumnSetting } from "../model/types"
 
 const YearTableSettings = ({
 	columnRenderStruct,
 	handleColumnActiveChange,
 }: {
-	columnRenderStruct: {
-		keyof: string
-		label: string
-		checked: boolean
-		disabled: boolean
-	}[]
-	handleColumnActiveChange: (
-		colSetting: {
-			keyof: string
-			label: string
-			checked: boolean
-			disabled: boolean
-		},
-		value: boolean,
-	) => void
+	columnRenderStruct: ColumnSetting[]
+	handleColumnActiveChange: (colSetting: ColumnSetting, value: boolean) => void
 }) => {
 	const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 	return (

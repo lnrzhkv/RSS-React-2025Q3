@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react"
 import { tableConstructor } from "./constructor"
+import type { ColumnSetting } from "./types"
 
 export const useYearTableSettings = () => {
 	const [activeColumnsState, setActiveColumnsState] = useState(() =>
@@ -7,15 +8,7 @@ export const useYearTableSettings = () => {
 	)
 
 	const handleColumnActiveChange = useCallback(
-		(
-			colSetting: {
-				keyof: string
-				label: string
-				checked: boolean
-				disabled: boolean
-			},
-			value: boolean,
-		) => {
+		(colSetting: ColumnSetting, value: boolean) => {
 			setActiveColumnsState((prevColumnSettings) => ({
 				...prevColumnSettings,
 				[colSetting.keyof]: {
@@ -40,24 +33,22 @@ export const useYearTableSettings = () => {
 		})
 	}, [activeColumnsState])
 
-	const activeColumns = useMemo(() => {
-		return Object.values(activeColumnsState)
+	const activeColumnsData = useMemo(() => {
+		const activeColumns = Object.values(activeColumnsState)
 			.filter((col) => col.active)
 			.map((col) => ({ keyof: col.keyof, label: col.label }))
+
+		return {
+			activeColumns,
+			activeKeys: activeColumns.map((col) => col.keyof),
+			activeLabels: activeColumns.map((col) => col.label),
+		}
 	}, [activeColumnsState])
-
-	const activeKeys = useMemo(() => {
-		return activeColumns.map((col) => col.keyof)
-	}, [activeColumns])
-
-	const activeLabels = useMemo(() => {
-		return activeColumns.map((col) => col.label)
-	}, [activeColumns])
 
 	return {
 		columnRenderStruct,
-		activeKeys,
-		activeLabels,
+		activeKeys: activeColumnsData.activeKeys,
+		activeLabels: activeColumnsData.activeLabels,
 		handleColumnActiveChange,
 	}
 }
