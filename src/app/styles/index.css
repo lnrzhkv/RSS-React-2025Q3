@@ -1,0 +1,14 @@
+@import "normalize.css";
+@import "tailwindcss";
+
+
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI";
+}
+
+body {
+  background-color: rgb(184, 184, 184);
+  position: relative;;
+}
+
